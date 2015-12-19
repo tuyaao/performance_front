@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>  
+<class  name="com.appcloud.vm.action.dbentity.VMhardware" table="vm_hardware" catalog="appcloud_performance" >
+
+      <id name="id" column="id" type="int">
+      </id>
+	
+      <property name="uuid" column="uuid" type="java.lang.String" />  
+      <property name="cpu" column="cpu" type="int" />
+      <property name="memory" column="memory" type="int" />
+      <property name="disk" column="disk" type="int" />
+      <property name="bandwidth" column="bandwidth" type="int" />
+
+</class>
+</hibernate-mapping> 

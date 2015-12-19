@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"       
+          "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.ui.templateDir" value="WEB-INF/template/" />
+    <!-- 开发阶段，设置为开发模式 -->
+    <constant name="struts.devMode" value="true" />
+    <!--拦截没有后缀的URL,如/ /hello /user/ -->
+    <constant name="struts.action.extension" value="," />    
+
+    <package name="default" extends="struts-default" abstract="true">
+        <result-types>
+            <result-type name="json" class="org.apache.struts2.json.JSONResult"/>
+        </result-types>
+        <interceptors>
+            <interceptor name="json" class="org.apache.struts2.json.JSONInterceptor"/>
+        </interceptors>
+        <!-- 当没有对应action时，返回404页面 -->
+        <default-action-ref name="404" />
+
+        <global-results>
+            <!-- 当数据验证错误时，struts2默认返回input结果，如果对应的action没有定义input，返回406页面 -->
+            <result name="input">/error/406.jsp</result>
+            <result name="error">/error/500.jsp</result>
+        </global-results>
+        
+        <global-exception-mappings>
+            <exception-mapping result="error" exception="java.lang.Exception" /> 
+        </global-exception-mappings>
+
+        <action name="404">
+            <result>/error/404.jsp</result>
+        </action>
+
+    </package>
+    
+    <package name="root" namespace="/" extends="default">
+    
+        <action name="login" class="com.appcloud.vm.action.account.LoginAction">
+            <result name="success" type="redirect">${redirect_url}</result>
+            <result name="input" type="redirect">/error/404.jsp</result>
+        </action>
+        <action name="logout" class="com.appcloud.vm.action.account.LogoutAction">
+			<result name="success" type="json"></result>
+	    	<result name="input" type="json"></result>
+	    	<result name="error" type="json"></result>
+		</action>
+		<!-- <result type="redirectAction">home</result> -->
+    	<action name="">
+    	<result>/mainjsp/homepage.jsp</result>
+    	</action>
+    	<action name="home" class="">
+    		<result>/mainjsp/homepage.jsp</result>
+    	</action>
+    	<action name="homechartajax" class="com.appcloud.vm.action.sum.SumGetchatAction">
+    		<result name="success" type="json"></result>
+    	</action>
+    	<action name="homecompanyajax" class="com.appcloud.vm.action.sum.SumGetCompanyAction">
+    		<result name="success" type="json"></result>
+    	</action>
+
+    </package>
+    <include file="compare.xml"></include>
+    <include file="search.xml"></include>
+    </struts>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"       
+          "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <package name="search" namespace="/search" extends="default">
+       <action name="vmdetail" class="com.appcloud.vm.action.sum.ToVmDetailAction">
+            <result>/mainjsp/search.jsp</result>
+       </action>     
+       <action name="vmdetailaction" class="com.appcloud.vm.action.search.GetVmDetailAction">
+            <result>/mainjsp/_vmdetail.jsp</result>
+       </action>
+    </package>
+</struts>

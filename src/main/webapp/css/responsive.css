@@ -1,0 +1,479 @@
+/* 鍝佺墝 */
+.front-brand{
+    padding-top: 11px;
+}
+/* 閫夐」鏍� */
+.front-toolbar {
+    position: relative;
+    padding-bottom: 10px;
+}
+/* 鍙虫诞鍔ㄦ寜閽� */
+@media (min-width: 768px) {
+    .front-toolbar > .btn {
+        float: right;
+    }
+}
+@media (max-width: 767px) {
+    .front-toolbar > .btn {
+        position: absolute;
+        top: 0px;
+    }
+}
+/* 鎶樺彔鑿滃崟 */
+.front-navbar-toggle {
+    border-color: #ccc !important;
+    margin-right: 0px;
+}
+.front-toolbar .navbar-toggle .icon-bar {
+    background-color: #888;
+}
+.front-toolbar .navbar-toggle {
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-color: #ccc;
+}
+.front-toolbar .navbar-toggle {
+    margin: 0px;
+}
+/* 鎸夐挳缁� */
+.front-btn-group {
+    position: relative;
+    vertical-align: middle;
+}
+.front-btn-group > .btn {
+    position: relative;
+    float: left;
+}
+.front-btn-group > .btn.active, .front-btn-group > .btn:active, .front-btn-group > .btn:hover {
+    z-index: 2;
+}
+/* 姘村钩鎸夐挳缁� */
+@media (min-width: 768px) {
+    .front-toolbar .collapse {
+        display: inline-block;
+        visibility: visible;
+    }
+    .front-toolbar .front-toolbar-header {
+        display: inline-block;
+    }
+    .front-btn-group .btn + .btn {
+        margin-left: -1px;
+    }
+    .front-btn-group > .btn:not(:first-child):not(:last-child) {
+        border-radius: 0;
+    }
+    .front-btn-group > .btn:first-child {
+        margin-left: 0;
+    }
+    .front-btn-group > .btn:first-child:not(:last-child) {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+    }
+    .front-btn-group > .btn:last-child:not(:first-child) {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+    }
+}
+/* 鍨傜洿鎸夐挳缁� */
+@media (max-width: 767px) {
+    .front-btn-group {
+        margin-top: 10px;
+    }
+    .front-btn-group > .btn {
+        display: block;
+        float: none;
+        width: 100%;
+        max-width: 100%;
+    }
+    .front-btn-group > .btn + .btn {
+        margin-top: -1px;
+        margin-left: 0;
+    }
+    .front-btn-group > .btn:not(:first-child):not(:last-child) {
+        border-radius: 0;
+    }
+    .front-btn-group > .btn:first-child:not(:last-child) {
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    .front-btn-group > .btn:last-child:not(:first-child) {
+        border-bottom-left-radius: 4px;
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+    }
+}
+/* 棣栭〉鍙戝竷璇濋鍖� */
+.front-topic>div:not(:first-child) {
+    padding: 0px;
+}
+.front-topic .front-topic-shrink, .front-topic .front-topic-extend {
+    resize: none;
+    overflow-x: hidden;
+}
+.front-topic .front-topic-shrink {
+    text-align: center;
+}
+.front-topic .front-topic-extend {
+    padding-left: 15px;
+}
+@media (min-width: 768px) {
+    .front-topic>div:first-child {
+        border-right: 1px solid #ccc;
+        margin-right: -1px;
+    }
+    .front-topic>div:not(:first-child) {
+        border-left: 1px solid #ccc;
+    }
+    .front-topic .front-topic-shrink {
+        height: 58px;
+        line-height: 46px;
+    }
+    .front-topic .front-topic-extend {
+        height: 44px;
+    }
+    .front-topic-publish {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+    }
+}
+@media (max-width: 767px) {
+    .front-topic>div:not(:first-child) {
+        border-top: 1px dotted #ccc;
+    }
+    .front-topic-publish {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+/* 璧勬簮绛涢�夋 */
+.front-checkboxes>label {
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: normal;
+    vertical-align: middle;
+    cursor: pointer;
+}
+.front-checkboxes>label + label {
+    margin-top: 0;
+}
+.front-checkboxes>label>input[type="checkbox"] {
+    position: absolute;
+    margin-top: 4px \9;
+    margin-left: -20px;
+}
+@media (max-width: 767px) {
+    .front-checkboxes>label {
+        width: 32%;
+    }
+    .front-checkboxes-bottom>label {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .front-checkboxes-bottom>button {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+@media (min-width: 768px) {
+    .front-form .front-inline:first-child {
+        width: 56px;
+        text-align: right;
+        float: left;
+    }
+    .front-form .front-inline:nth-child(2) {
+        margin-left: 71px;
+    }
+    .front-checkboxes>label + label {
+        margin-left: 10px;
+    }
+    .front-checkboxes>button {
+        float: right;
+    }
+    .front-checkboxes>button + button {
+        margin-right: 5px;
+    }
+    .front-checkboxes-bottom>label {
+        margin-top: 0px;
+    }
+}
+/* 鍒嗛〉 */
+@media (max-width: 767px) {
+    .pagination{
+        width:100%;
+        border-radius:0px;
+    }
+    .pagination > li > a, .pagination > li > span {
+        width:50%;
+        display:block;
+        text-align:center;
+        border-radius:0px;
+        margin-left:0px;
+        border: 0px;
+    }
+    .pagination > li > a, .pagination > li > span {
+        border-bottom: 1px solid #ddd;
+    }
+    .pagination > li:first-child > a, .pagination > li:first-child > span {
+        width: 100%;
+        border-radius:0px;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+    }
+    .pagination > li:nth-child(even):not(:last-child) > a, .pagination > li:first-child:not(:last-child) > span {
+        border-right: 1px solid #ddd;
+    }
+    .pagination > li:last-child > a, .pagination > li:last-child > span {
+        width: 100%;
+        border-radius:0px;
+        margin-top: -1px;
+        border-top: 1px solid #ddd;
+    }
+}
+/* 鏂囧瓧瀹藉害 */
+.front-text-title, .front-text-desc {
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    -o-text-overflow:ellipsis;
+    overflow:hidden;
+}
+.front-top-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+@media (max-width: 320px) {
+    .front-text-title {
+        max-width: 12em;
+    }
+}
+@media (min-width: 321px) and (max-width: 767px) {
+    .front-text-title {
+        max-width: 15em;
+    }
+}
+/* 瀵艰埅鏍� */
+.front-brand {
+    padding-top: 10px;
+    margin-left: 0 !important;
+}
+.front-msg-badge{
+    border-radius: 0;
+    background-color: #3778bc;
+}
+.front-no-padding-horizon {
+    padding-left: 0;
+    padding-right: 0;
+}
+.front-no-padding {
+    padding: 0;
+}
+.front-form-horizontal .checkbox-inline {
+    padding-top: 0;
+}
+.front-form-horizontal .radio-inline {
+    padding-top: 1px;
+    padding-right: 0;
+}
+.front-form-horizontal label {
+    font-weight: normal;
+    padding-right: 0;
+}
+.front-search-panel {
+    margin-bottom: 0;
+}
+.front-search-panel .panel-body {
+    padding: 5px 15px;
+}
+.front-search-range {
+    box-shadow: none;
+    border: 0;
+    border-radius: 0;
+}
+.front-navbar-right {
+    position: relative;
+}
+.front-navbar-right input {
+    padding-left: 28px;
+}
+.front-navbar-right span {
+    position: absolute;
+    left: 24px;
+}
+#freeshare-navbar-collapse {
+    max-height: 380px;
+}
+@media (min-width: 768px) {
+    .front-navbar-right {
+        float: right;
+        width: 25%;
+    }
+    .front-navbar-right>input {
+        width: 100% !important;
+    }
+    .front-navbar-right span {
+        top: 10px;
+    }
+}
+@media (max-width: 767px) {
+    .front-navbar-right span {
+        top: 20px;
+    }
+}
+@media (min-width: 768px) {
+    .front-rw-right-btns {
+        text-align: right;
+    }
+}
+@media (max-width: 767px) {
+    .front-rw-right-btns .btn {
+        display: block;
+        width: 100%;
+    }
+    .front-rw-right-btns>button:not(:last-child) {
+        margin-bottom: 10px;
+    }
+    .front-form-horizontal .form-group {
+        margin-bottom: 10px;
+    }
+}
+/* 棣栭〉鍥剧墖澶у皬 */
+@media (min-width: 768px) {
+    .front-img-thumbnail {
+        max-width: 300px;
+        max-height: 120px;
+        margin-right: 10px;
+    }
+    .front-video-thumbnail {
+        height: 120px;
+        width: 160px;
+    }
+}
+@media (max-width: 767px) {
+    .front-img-thumbnail, .front-video-thumbnail {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+}
+/* 妯℃�佹婊氬姩鏉� */
+@media (max-width: 767px) {
+    .front-rw-modal {
+        max-height: 380px;
+        overflow-y: auto;
+    }
+}
+/* 璧勬簮鍗曢〉璇勮鎸夐挳 */
+@media (min-width: 768px) {
+    .front-comment-btn {
+        position: absolute;
+        right: 15px;
+        bottom: 0;
+    }
+}
+@media (max-width: 767px) {
+    .front-comment-btn {
+        padding-right: 15px;
+        padding-top: 20px;
+        text-align: right;
+    }
+}
+/* 璧勬簮淇℃伅 */
+@media (min-width: 768px) {
+    .front-rw-resource-info {
+        margin-bottom: 20px;
+    }
+    .front-rw-resource-info>div {
+        display: inline-block;
+    }
+    .front-rw-resource-info>div:first-of-type {
+        margin-left: 15px;
+        margin-right: 10px;
+    }
+}
+@media (max-width: 767px) {
+    .front-rw-resource-info {
+        margin-bottom: 10px;
+    }
+    .front-rw-resource-info>div {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+/* 棣栭〉鍔ㄦ�佸崱鐗� */
+@media (min-width: 768px) {
+    .front-news-panel {
+        position: relative;
+        margin-bottom: 15px;
+    }
+    .front-news-op {
+        position: absolute;
+        right: 15px;
+        bottom: 0;
+    }
+}
+@media (max-width: 767px) {
+    .front-news-op {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        margin-top: 10px;
+    }
+    .front-news-op>.btn {
+        display: table-cell;
+        float: none;
+        width: 1%;
+    }
+}
+.front-loading{
+    margin: 0 auto;
+    width: 48px;
+    height: 54px;
+}
+.front-loading-block{
+    background-color:#3777BC;
+    float:left;
+    height:46px;
+    margin-left:3px;
+    width:12px;
+    opacity:0.1;
+    animation-name:bounceG;
+    animation-duration:1.3s;
+    animation-iteration-count:infinite;
+    animation-direction:normal;
+    transform:scale(0.7);
+}
+.front-loading>div:nth-child(1) {
+    animation-delay:0.39s;
+}
+.front-loading>div:nth-child(2) {
+    animation-delay:0.52s;
+}
+.front-loading>div:nth-child(3) {
+    animation-delay:0.65s;
+}
+@keyframes bounceG{
+    from {
+        transform:scale(1.2);
+        opacity:1
+    }
+    to {
+        transform:scale(0.7);
+        opacity:0.1
+    }
+}
+@media (max-width: 767px) {
+	.front-media-left {
+		display: block;
+		margin-right: auto;
+		margin-left: auto;
+		padding-right: 0
+	}
+	.front-media-left-body {
+		width: auto;
+		display: block;
+	}
+}

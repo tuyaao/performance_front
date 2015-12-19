@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>  
+<class  name="com.appcloud.vm.action.dbentity.Dblog" table="dblog" catalog="appcloud_performance" >
+
+      <id name="id" column="id" type="int">
+      </id>
+       
+      <property name="tableName" column="table_name" type="String" />  
+      <property name="changeId" column="change_id" type="int" />
+      <property name="changeType" column="change_type" type="String" />
+      <property name="changeTime" column="change_time" type="timestamp" />
+
+</class>

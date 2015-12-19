@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>  
+<class  name="com.appcloud.vm.action.dbentity.VMInstance" table="vm_instance" catalog="appcloud_performance" >
+
+      <id name="id" column="id" type="int">
+      </id>
+	
+      <property name="ip" column="ip" type="java.lang.String" />  
+      <property name="mac" column="mac" type="java.lang.String" />
+      <property name="cloudPlatformId" column="cloud_platform_id" type="int" />
+      <property name="name" column="name" type="java.lang.String" />
+      <property name="description" column="description" type="java.lang.String" />
+      <property name="createTime" column="create_time" type="java.sql.Timestamp" />
+      <property name="updateTime" column="update_time" type="java.sql.Timestamp" />
+      <property name="status" column="status" type="java.lang.String" />
+      <property name="os" column="os" type="java.lang.String" />
+      <property name="hardware" column="hardware" type="int" />
+
+</class>
+</hibernate-mapping> 
