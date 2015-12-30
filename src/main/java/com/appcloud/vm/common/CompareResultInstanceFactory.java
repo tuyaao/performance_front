@@ -11,14 +11,19 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.appcloud.vm.action.dao.CpuTestResultDao;
-import com.appcloud.vm.action.dao.FileIoTestResultDao;
-import com.appcloud.vm.action.dao.MemoryTestResultDao;
-import com.appcloud.vm.action.dao.OltpTestResultDao;
 import com.appcloud.vm.action.entity.CompareResultEntity;
 import com.appcloud.vm.utils.StringUtil;
 import com.appcloud.vm.utils.TimeIntervalUtil;
-import com.free4lab.ipcClient.model.OltpTestResult;
+import com.free4lab.monitorproxy.hbasetemp.BeanCpu;
+import com.free4lab.monitorproxy.hbasetemp.BeanIozone;
+import com.free4lab.monitorproxy.hbasetemp.BeanMem;
+import com.free4lab.monitorproxy.hbasetemp.BeanPing;
+import com.free4lab.monitorproxy.hbasetemp.BeanTpcc;
+import com.free4lab.monitorproxy.restclient.CpuClient;
+import com.free4lab.monitorproxy.restclient.IozoneClient;
+import com.free4lab.monitorproxy.restclient.MemClient;
+import com.free4lab.monitorproxy.restclient.PingClient;
+import com.free4lab.monitorproxy.restclient.TpccClient;
 
 /**
  * @param 需要查询的虚拟机ID
@@ -31,6 +36,11 @@ public class CompareResultInstanceFactory {
 	private StringUtil stringUtil = new StringUtil();
 	private Logger logger = Logger
 			.getLogger(CompareResultInstanceFactory.class);
+	private CpuClient cpuClient = new CpuClient();
+	private MemClient memClient = new MemClient();
+	private IozoneClient iozoneClient = new IozoneClient();
+	private TpccClient tpccClient = new TpccClient();
+	private PingClient pingClient = new PingClient();
 	
 	public CompareResultInstanceFactory(){
 	}
@@ -52,17 +62,19 @@ public class CompareResultInstanceFactory {
 		compareResultInstance.setInstanceId(id);
 		LinkedHashMap<Calendar, Float> cpuTestMap = new LinkedHashMap<Calendar, Float>();
     	Long start = System.currentTimeMillis();
-		CpuTestResultDao CpuTestResultProxy = new CpuTestResultDao();
-		ArrayList cpuTestVm =  CpuTestResultProxy
-				.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+//		CpuTestResultDao CpuTestResultProxy = new CpuTestResultDao();
+//		ArrayList cpuTestVm =  CpuTestResultProxy
+//				.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanCpu> cpuTestVm = cpuClient.findCpuByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
 		if (cpuTestVm.size() > 0){
 			compareResultEntity.setCpuCurveListAllNull(false);
 		}
+		logger.error("每一次获取cpu的个数"+cpuTestVm.size());
 		for (int k = 0; k < cpuTestVm.size(); k++) {
-			Object[] obj = (Object[])cpuTestVm.get(k);
+			BeanCpu obj = cpuTestVm.get(k);
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime((Date)obj[0]);
-			cpuTestMap.put(calendar, (Float) obj[1]);
+			calendar.setTime((Date)obj.getCreatedTime());
+			cpuTestMap.put(calendar, (Float) obj.getTotalTime());
 //			logger.error("时间："+stringUtil.cal2String(calendar)+"; 值："+cpuTestVm.get(k).getTotalTime()+"");
 		}
 		compareResultInstance.setCurve(insertTestResult(cpuTestMap,
@@ -83,17 +95,19 @@ public class CompareResultInstanceFactory {
 		LinkedHashMap<Calendar, Float> memTestMap = new LinkedHashMap<Calendar, Float>();
 		Long start = System.currentTimeMillis();
 		logger.error("do here mem");
-		MemoryTestResultDao MemoryTestResultProxy = new MemoryTestResultDao();
-		ArrayList memTestVm =  MemoryTestResultProxy
-				.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+//		MemoryTestResultDao MemoryTestResultProxy = new MemoryTestResultDao();
+//		ArrayList memTestVm =  MemoryTestResultProxy
+//				.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanMem> memTestVm = memClient.findMemByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+		logger.error("每一次获取mem的个数"+memTestVm.size());
 		if (memTestVm.size() > 0){
 			compareResultEntity.setMemoryCurveListAllNull(false);
 		}
 		for (int k = 0; k < memTestVm.size(); k++) {
-			Object[] obj = (Object[])memTestVm.get(k);
+			BeanMem obj = memTestVm.get(k);
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime((Date)obj[0]);
-			memTestMap.put(calendar, (Float) obj[1]);
+			calendar.setTime((Date)obj.getCreatedTime());
+			memTestMap.put(calendar, obj.getTransferSpeed());
 		}
 		compareResultInstance.setCurve(insertTestResult(memTestMap,
 				TimeIntervalUtil.timestamp2Calendar(tsSelectTimeStart), TimeIntervalUtil.timestamp2Calendar(tsSelectTimeEnd)));
@@ -127,35 +141,31 @@ public class CompareResultInstanceFactory {
 		LinkedHashMap<Calendar, Float> ioRndwrTestMap = new LinkedHashMap<Calendar, Float>();
     	Long start = System.currentTimeMillis();
 		try {
-			FileIoTestResultDao fileIoTestResultProxy = new FileIoTestResultDao();
-			ArrayList ioTestVm =  fileIoTestResultProxy
-					.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+//			FileIoTestResultDao fileIoTestResultProxy = new FileIoTestResultDao();
+//			ArrayList ioTestVm =  fileIoTestResultProxy
+//					.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+			List<BeanIozone> ioTestVm = iozoneClient.findIoByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
 			Long end = System.currentTimeMillis();
 	    	logger.error("每一次fileio的获取时间"+Long.toString(end-start));
-	    	logger.error("一共多少个"+ioTestVm.size()+"");
-			for (int k = 0; k < ioTestVm.size(); k++) {
-				Object[] obj = (Object[])ioTestVm.get(k);
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime((Date)obj[0]);
-				if (obj[1].equals("SEQRD")) {
-					ioSeqrdTestMap
-							.put(calendar, (Float) obj[2]);
-				} else if (obj[1].equals("SEQWR")) {
-					ioSeqwrTestMap
-							.put(calendar, (Float) obj[2]);
-				} else if (obj[1].equals("RNDRD")) {
-					ioRndrdTestMap
-							.put(calendar, (Float) obj[2]);
-				} else if (obj[1].equals("RNDWR")) {
-					ioRndwrTestMap
-							.put(calendar, (Float) obj[2]);
-				}
-			}
-			if (ioTestVm.size() > 0){
-				compareResultEntity.setFileIoRndrdCurveListAllNull(false);
-				compareResultEntity.setFileIoRndwrCurveListAllNull(false);
+	    	logger.error("每一次获取io的个数"+ioTestVm.size());
+	    	if (ioTestVm.size() > 0){
 				compareResultEntity.setFileIoSeqrdCurveListAllNull(false);
 				compareResultEntity.setFileIoSeqwrCurveListAllNull(false);
+				compareResultEntity.setFileIoRndrdCurveListAllNull(false);
+				compareResultEntity.setFileIoRndwrCurveListAllNull(false);
+			}
+			for (int k = 0; k < ioTestVm.size(); k++) {
+				BeanIozone obj = ioTestVm.get(k);
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(obj.getCreatedTime());
+					ioSeqrdTestMap
+							.put(calendar, Float.parseFloat(obj.getRead()+""));
+					ioSeqwrTestMap
+							.put(calendar, Float.parseFloat(obj.getWrite()+""));
+					ioRndrdTestMap
+							.put(calendar, Float.parseFloat(obj.getRandomRead()+""));
+					ioRndwrTestMap
+							.put(calendar, Float.parseFloat(obj.getRandomWrite()+""));
 			}
 			logger.error("do here Io");
 			ioSeqrdTestInstance.setCurve(insertTestResult(ioSeqrdTestMap,
@@ -206,17 +216,19 @@ public class CompareResultInstanceFactory {
 		LinkedHashMap<Calendar, Float> oltpotherTestMap = new LinkedHashMap<Calendar, Float>();
 		Long start = System.currentTimeMillis();
 		
-		OltpTestResultDao OltpTestResultProxy = new OltpTestResultDao();
-		ArrayList oltpTestVm =  OltpTestResultProxy
-				.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+//		OltpTestResultDao OltpTestResultProxy = new OltpTestResultDao();
+//		ArrayList oltpTestVm =  OltpTestResultProxy
+//				.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanTpcc> oltpTestVm = tpccClient.findTpccByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+		logger.error("每一次获取oltp的个数"+oltpTestVm.size());
 		for (int k = 0; k < oltpTestVm.size(); k++) {
-			Object[] obj = (Object[])oltpTestVm.get(k);
+			BeanTpcc obj = oltpTestVm.get(k);
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime((Date)obj[0]);
-			oltptransTestMap.put(calendar, (Float) obj[1]);
-			oltpdeadTestMap.put(calendar, (Float) obj[2]);
-			oltprdwrTestMap.put(calendar, (Float) obj[3]);
-			oltpotherTestMap.put(calendar, (Float) obj[4]);
+			calendar.setTime((Date)obj.getCreatedTime());
+			oltptransTestMap.put(calendar, (Float) obj.getTpmc());
+			oltpdeadTestMap.put(calendar, Float.parseFloat("0"));
+			oltprdwrTestMap.put(calendar, Float.parseFloat("0"));
+			oltpotherTestMap.put(calendar, Float.parseFloat("0"));
 		}
 		
 //		Long end = System.currentTimeMillis();
@@ -245,6 +257,51 @@ public class CompareResultInstanceFactory {
     	logger.error("每一次oltp的获取时间"+Long.toString(end-start));
 		return compareResultInstanceList;
 	}
+	
+	public CompareResultInstance getCompareResultPing(Integer id,
+			Integer cloudPlatformId, Timestamp tsSelectTimeStart,
+			Timestamp tsSelectTimeEnd) throws Exception {
+		CompareResultInstance compareResultInstance = new CompareResultInstance();
+		compareResultInstance.setCompanyId(cloudPlatformId);
+		compareResultInstance.setInstanceId(id);
+
+		LinkedHashMap<Calendar, Float> pingTestMap = new LinkedHashMap<Calendar, Float>();
+		Long start = System.currentTimeMillis();
+		logger.error("do here ping");
+//		MemoryTestResultDao MemoryTestResultProxy = new MemoryTestResultDao();
+//		ArrayList memTestVm =  MemoryTestResultProxy
+//				.findAllExcatByBetween(id, tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanPing> pingTestVm = pingClient.findPingByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+		float sumtmp = 0;
+		float size = 0;
+		long time = 0;
+		if (pingTestVm.size() > 0){
+			compareResultEntity.setPingCurveListAllNull(false);
+			//这个初始化由于也需要判断是否为0，所以放在这里，但跟setfalse没关系
+			time = pingTestVm.get(0).getCreatedTime().getTime();
+		}
+		logger.error("每一次获取ping的大概个数"+pingTestVm.size()/5);
+		for (int k = 0; k < pingTestVm.size(); k++) {
+			//获取ping 顺序的
+			BeanPing obj = pingTestVm.get(k);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime((Date)obj.getCreatedTime());
+			if(obj.getCreatedTime().getTime() == time){
+				sumtmp = sumtmp + obj.getAvg();
+				size++;
+			}else{
+				pingTestMap.put(calendar, sumtmp/size );
+				sumtmp = obj.getAvg();size = 1;time = obj.getCreatedTime().getTime();
+			}
+		}
+		compareResultInstance.setCurve(insertTestResult(pingTestMap,
+				TimeIntervalUtil.timestamp2Calendar(tsSelectTimeStart), TimeIntervalUtil.timestamp2Calendar(tsSelectTimeEnd)));
+//		logger.info("mem:"+compareResultInstance.getCurve()+"");
+		Long end = System.currentTimeMillis();
+    	logger.error("每一次ping的获取时间"+Long.toString(end-start));
+		return compareResultInstance;
+	}
+	
 
 	/**
 	 * @param 数据源

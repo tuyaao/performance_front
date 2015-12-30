@@ -33,6 +33,7 @@
 									<label><input type="checkbox" value="1" name="dataselect">内存</label>
 									<label><input type="checkbox" value="2" name="dataselect">硬盘I/O</label>
 									<label><input type="checkbox" value="3" name="dataselect">MySQL</label>
+									<label><input type="checkbox" value="4" name="dataselect">PING</label>
 								</div>
 							</div>	
 						</div>

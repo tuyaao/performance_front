@@ -11,9 +11,10 @@ public class CloudPlatformRanking {
 	private float Rndrd;
 	private float Rndwr;
 	private float transaction; //每秒可以执行的事务数
+	private float ping;
 	private Timestamp testTime; //测试时间
 	
-	public CloudPlatformRanking(Integer id, String cloudPlatformName, float cpu, float mem, float Rndrd, float Rndwr, float transaction, Timestamp testTime){
+	public CloudPlatformRanking(Integer id, String cloudPlatformName, float cpu, float mem, float Rndrd, float Rndwr, float transaction, Timestamp testTime, float ping){
 		this.id = id;
 		this.cloudPlatformName = cloudPlatformName;
 		this.cpu = cpu;
@@ -22,6 +23,7 @@ public class CloudPlatformRanking {
 		this.Rndwr = Rndwr;
 		this.transaction = transaction;
 		this.testTime = testTime;
+		this.ping = ping;
 	}
 
 	public Integer getId() {
@@ -88,7 +90,13 @@ public class CloudPlatformRanking {
 	public void setTestTime(Timestamp testTime) {
 		this.testTime = testTime;
 	}
-	
-	
+
+	public float getPing() {
+		return ping;
+	}
+
+	public void setPing(float ping) {
+		this.ping = ping;
+	}
 	
 }

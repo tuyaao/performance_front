@@ -7,6 +7,17 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   
+  <!-- 版本 -->
+	<properties>
+		<spring.version>4.0.5.RELEASE</spring.version>
+		<hibernate.version>5.0.0.Final</hibernate.version>
+		<jersey.version>1.19</jersey.version>
+		<log4j.version>1.2.17</log4j.version>
+		<org.slf4j.version>1.7.12</org.slf4j.version>
+		<junit.version>4.12</junit.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+  
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -61,10 +72,61 @@
 	        <artifactId>minify-maven-plugin</artifactId>
 	        <version>1.7</version>
         </dependency>
+        
+        <!-- Jersey -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-bundle</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
+		<!-- slf4j + log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		
 	</dependencies>
 	
 	<build>
-		<finalName>test</finalName>
+		<finalName>performance_front</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>

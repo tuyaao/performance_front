@@ -6,7 +6,7 @@
   			<div class="front-loading-block"></div>
   			<div class="front-loading-block"></div>
 	</div>
-	<s:iterator value="{'cpu','memory','ioseqrd','ioseqwr','iorndrd','iorndwr','oltptrans','oltpdead','oltprdwr'}" id='chartsid' status='st'>
+	<s:iterator value="{'cpu','memory','ioseqrd','ioseqwr','iorndrd','iorndwr','oltptrans','oltpdead','oltprdwr','ping'}" id='chartsid' status='st'>
 		<div id="<s:property value='chartsid' />" class="panel panel-default front-panel hidden">
 		    <div class="panel-heading">
      				<h3 class="panel-title">
@@ -18,7 +18,8 @@
        					<s:elseif test="#st.count == 6">硬盘I/O[随机写](单位: MB/S)</s:elseif>
        					<s:elseif test="#st.count == 7">MySQL性能(单位: 事务数/s)</s:elseif>
        					<s:elseif test="#st.count == 8">MySQL—死锁</s:elseif>
-       					<s:elseif test="#st.count == 9">MySQL性能(单位: 读写次数/s)</s:elseif>   				
+       					<s:elseif test="#st.count == 9">MySQL性能(单位: 读写次数/s)</s:elseif>   	
+       					<s:elseif test="#st.count == 10">PING(单位: 往返延迟)</s:elseif>			
      				</h3>  		
   				</div>
   				<div class="panel-body">

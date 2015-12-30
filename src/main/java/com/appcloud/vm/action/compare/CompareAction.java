@@ -2,7 +2,6 @@ package com.appcloud.vm.action.compare;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.log4j.Logger;
 
-import com.appcloud.vm.action.entity.CloudPlatformRanking;
 import com.appcloud.vm.action.entity.CompareResultEntity;
 import com.appcloud.vm.action.entity.VM48InforEntity;
 import com.appcloud.vm.common.CompareResultInstance;
@@ -49,6 +47,7 @@ public class CompareAction extends ActionSupport {
 	private List<CompareResultInstance> oltptrans = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltpdead = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltprdwr = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> ping = new ArrayList<CompareResultInstance>();
 	
 	private ArrayList<VM48InforEntity> VM48InforList = InitializeListener.getVM48InforList();
 	
@@ -139,6 +138,7 @@ public class CompareAction extends ActionSupport {
 		compareResultEntity.setOltpTransCurveList(oltptrans);
 		compareResultEntity.setOltpDeadCurveList(oltpdead);
 		compareResultEntity.setOltpRdWtCurveList(oltprdwr);
+		compareResultEntity.setPingCurveList(ping);
 		
 		compareResultEntity.SetCurve();
 		cutCompareResultEntityCurveEnd(compareResultEntity);
@@ -248,6 +248,9 @@ public class CompareAction extends ActionSupport {
 				oltpdead.add(compareResultOltpList.get(1));
 				oltprdwr.add(compareResultOltpList.get(2));
 				break;
+			case 4:
+				ping.add(compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd));
+				break;
 			default:
 			}
 	    	Long end = System.currentTimeMillis();
@@ -271,6 +274,7 @@ public class CompareAction extends ActionSupport {
 		cutCurveEnd(compareResultEntity.getOltpRdWtCurveList());
 		cutCurveEnd(compareResultEntity.getOltpTransCurveList());
 		cutCurveEnd(compareResultEntity.getOltpDeadCurveList());
+		cutCurveEnd(compareResultEntity.getPingCurveList());
 	}
 	
 	/**
@@ -353,4 +357,12 @@ public class CompareAction extends ActionSupport {
 
 	}
 
+	public List<CompareResultInstance> getPing() {
+		return ping;
+	}
+
+	public void setPing(List<CompareResultInstance> ping) {
+		this.ping = ping;
+	}
+	
 }

@@ -15,7 +15,8 @@ function compareConfirm(id,name,cpu,ram){
 	$("#iorndwr").addClass("hidden");
 	$("#oltptrans").addClass("hidden");
 	$("#oltpdead").addClass("hidden");
-	$("#oltprdwr").addClass("hidden");	
+	$("#oltprdwr").addClass("hidden");
+	$("#ping").addClass("hidden");	
 	$("#termsnull").addClass("hidden");
 	$("#loadingcharts").removeClass("hidden");
     var selectendtime = $("#rest_example_4_end").val();//查询截至时间
@@ -85,7 +86,19 @@ function compareConfirm(id,name,cpu,ram){
     			$("#oltprdwr").removeClass("hidden");
     			chartdata("oltprdwrhighcharts", "MySQL—读写", data.compareResultEntity.oltpRdWtCurveList);
 //    			$("#oltprdwrhighcharts").prev().removeClass("hidden");
-    			
+    		}
+    		
+//    		if(dataselect[4].checked){
+//    			alert("dataselect[4].checked");
+//    		}
+//    		if(data.compareResultEntity.pingCurveList != null){
+//    			alert("data.compareResultEntity.pingCurveList != null");
+//    		}
+    		
+    		if(dataselect[4].checked && data.compareResultEntity.pingCurveList != null){
+    			alert("ping");
+    			$("#ping").removeClass("hidden");
+    			chartdata("pinghighcharts", "PING", data.compareResultEntity.pingCurveList); 			
     		}
     		$("#loadingcharts").addClass("hidden");
     	});

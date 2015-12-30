@@ -16,6 +16,7 @@ public class CompareResultEntity {
 	private Boolean oltpTransCurveListAllNull = true;
 	private Boolean oltpDeadCurveListAllNull = true;
 	private Boolean oltpRdWtCurveListAllNull = true;
+	private Boolean pingCurveListAllNull = true;
 	
 	private List<CompareResultInstance> cpuCurveList = new ArrayList<CompareResultInstance>();// cpu曲线集合
 	private List<CompareResultInstance> fileIoSeqrdCurveList = new ArrayList<CompareResultInstance>();// fileIo顺序读曲线集合
@@ -26,6 +27,7 @@ public class CompareResultEntity {
 	private List<CompareResultInstance> oltpTransCurveList = new ArrayList<CompareResultInstance>();// oltp事务曲线集合
 	private List<CompareResultInstance> oltpDeadCurveList = new ArrayList<CompareResultInstance>();// oltp死锁曲线集合
 	private List<CompareResultInstance> oltpRdWtCurveList = new ArrayList<CompareResultInstance>();// oltp死锁曲线集合
+	private List<CompareResultInstance> pingCurveList = new ArrayList<CompareResultInstance>();// ping曲线集合
 	
 	public CompareResultEntity(){
 		
@@ -41,6 +43,7 @@ public class CompareResultEntity {
 		if (oltpTransCurveListAllNull) oltpTransCurveList = null;
 		if (oltpDeadCurveListAllNull) oltpDeadCurveList = null;
 		if (oltpRdWtCurveListAllNull) oltpRdWtCurveList = null;
+		if (pingCurveListAllNull) pingCurveList = null;
 	}
 
 	public List<CompareResultInstance> getCpuCurveList() {
@@ -191,4 +194,23 @@ public class CompareResultEntity {
 		this.oltpRdWtCurveListAllNull = oltpRdWtCurveListAllNull;
 	}
 
+	public Boolean getPingCurveListAllNull() {
+		return pingCurveListAllNull;
+	}
+
+	public void setPingCurveListAllNull(Boolean pingCurveListAllNull) {
+		this.pingCurveListAllNull = pingCurveListAllNull;
+	}
+
+	public List<CompareResultInstance> getPingCurveList() {
+		return pingCurveList;
+	}
+
+	public void setPingCurveList(List<CompareResultInstance> pingCurveList) {
+		this.pingCurveList = pingCurveList;
+	}
+
+	
+
+	
 }

@@ -59,6 +59,7 @@ public class ExportExcelAction extends ActionSupport {
 	private List<CompareResultInstance> oltptrans = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltpdead = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltprdwr = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> ping = new ArrayList<CompareResultInstance>();
 	
 	private ArrayList<VM48InforEntity> VM48InforList = InitializeListener.getVM48InforList();
 	private CompareResultInstanceFactory compareResultInstanceFactory = new CompareResultInstanceFactory(compareResultEntity);
@@ -68,7 +69,7 @@ public class ExportExcelAction extends ActionSupport {
 	private String fileName;
 	
 	private WritableWorkbook workbook;
-    private String[][] title = {{"Host","Time","TotalTime"},{"Host","Time","TransferSpeed"},{"Host","Time","SEQRD","SEQWR","RNDRD","RNDWR"},{"Host","Time","TransactionFrq","DeadLockFrq","ReadWriteFrq"}};
+    private String[][] title = {{"Host","Time","TotalTime"},{"Host","Time","TransferSpeed"},{"Host","Time","SEQRD","SEQWR","RNDRD","RNDWR"},{"Host","Time","TransactionFrq"},{"Host","Time","Ping"}};
 	private Integer sheetNumber = 0;
 	
 //	private static int[] a = {30, 28, 37, 36, 38, 35, 31, 32, 33, 34};
@@ -143,6 +144,13 @@ public class ExportExcelAction extends ActionSupport {
 			        ThreadPool.submitThread(futureTaskSQL);
 			        FutureTaskList.add(futureTaskSQL);
 					break;
+				case 4:
+					// 填充一台虚拟机的时间-值
+					GetCurveForEachVmTask taskPING = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 3);
+			        FutureTask<CompareResultInstance> futureTaskPING = new FutureTask<CompareResultInstance>(taskPING);
+			        ThreadPool.submitThread(futureTaskPING);
+			        FutureTaskList.add(futureTaskPING);
+					break;
 				default:
 				}
 			}
@@ -160,9 +168,9 @@ public class ExportExcelAction extends ActionSupport {
 		compareResultEntity.setOltpTransCurveList(oltptrans);
 		compareResultEntity.setOltpDeadCurveList(oltpdead);
 		compareResultEntity.setOltpRdWtCurveList(oltprdwr);
+		compareResultEntity.setOltpRdWtCurveList(ping);
 		
 		compareResultEntity.SetCurve();
-		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			workbook = Workbook.createWorkbook(out);
@@ -280,6 +288,31 @@ public class ExportExcelAction extends ActionSupport {
 				value3 = (String[])valueList3.toArray(new String[valueList3.size()]);
 				addSheetInWorkBook(workbook, sheetNumber++, "MySQL", title[3], name, time, value1, value2, value3);
 		    	break;
+		    case 4:
+		    	nameList = new ArrayList<String>();
+				timeList = new ArrayList<String>();
+				valueList1 = new ArrayList<String>();
+				List<CompareResultInstance> pingCurveList = compareResultEntity.getPingCurveList();//所有的曲线
+				for (int i = 0; null!= pingCurveList && i < pingCurveList.size(); i++){ //单条曲线
+					List<Map<String,String>> curve = pingCurveList.get(i).getCurve();//每一条曲线
+					String InstanceName = getNameById(pingCurveList.get(i).getCompanyId(), pingCurveList.get(i).getInstanceId());
+					for (int j = 0; j < curve.size(); j++){
+						timeList.add(curve.get(j).get(Constants.CURVEINSTANCEMAPTIME));
+						valueList1.add(null == curve.get(j).get(Constants.CURVEINSTANCEMAPVALUE)? "NA":curve.get(j).get(Constants.CURVEINSTANCEMAPVALUE));
+						//这个我不能理解为什么null 无法改为"暂无数据"
+						//valueList1.add(curve.get(j).get(Constants.CURVEINSTANCEMAPVALUE));
+						try {
+							nameList.add(InstanceName);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				name = (String[])nameList.toArray(new String[nameList.size()]);
+				time = (String[])timeList.toArray(new String[timeList.size()]);
+				value1 = (String[])valueList1.toArray(new String[valueList1.size()]);
+				addSheetInWorkBook(workbook, sheetNumber++, "Ping", title[4], name, time, value1 );
+				break;
 		    default:
 			}
 		}
@@ -449,6 +482,9 @@ public class ExportExcelAction extends ActionSupport {
 				oltptrans.add(compareResultOltpList.get(0));
 				oltpdead.add(compareResultOltpList.get(1));
 				oltprdwr.add(compareResultOltpList.get(2));
+				break;
+			case 4:
+				ping.add(compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd));
 				break;
 			default:
 			}

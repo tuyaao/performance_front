@@ -1,6 +1,8 @@
 package com.appcloud.vm.action.sum;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -11,20 +13,22 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.log4j.Logger;
 
-import com.appcloud.vm.action.dao.CpuTestResultWeekDao;
-import com.appcloud.vm.action.dao.FileIoTestResultWeekDao;
-import com.appcloud.vm.action.dao.MemoryTestResultWeekDao;
-import com.appcloud.vm.action.dao.OltpTestResultWeekDao;
 import com.appcloud.vm.action.dbentity.CloudPlatform;
-import com.appcloud.vm.action.dbentity.CpuTestResultWeek;
-import com.appcloud.vm.action.dbentity.FileIoTestResultWeek;
-import com.appcloud.vm.action.dbentity.MemoryTestResultWeek;
-import com.appcloud.vm.action.dbentity.OltpTestResultWeek;
 import com.appcloud.vm.action.entity.CloudPlatformRanking;
 import com.appcloud.vm.utils.InitializeListener;
 import com.appcloud.vm.utils.StringUtil;
 import com.appcloud.vm.utils.ThreadPool;
 import com.appcloud.vm.utils.TimeIntervalUtil;
+import com.free4lab.monitorproxy.hbasetemp.BeanCpu;
+import com.free4lab.monitorproxy.hbasetemp.BeanIozone;
+import com.free4lab.monitorproxy.hbasetemp.BeanMem;
+import com.free4lab.monitorproxy.hbasetemp.BeanPing;
+import com.free4lab.monitorproxy.hbasetemp.BeanTpcc;
+import com.free4lab.monitorproxy.restclient.CpuClient;
+import com.free4lab.monitorproxy.restclient.IozoneClient;
+import com.free4lab.monitorproxy.restclient.MemClient;
+import com.free4lab.monitorproxy.restclient.PingClient;
+import com.free4lab.monitorproxy.restclient.TpccClient;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SumGetchatAction extends ActionSupport{
@@ -40,14 +44,15 @@ public class SumGetchatAction extends ActionSupport{
     private ArrayList<CloudPlatformRanking> cloudPlatformReadRankingList = new ArrayList<CloudPlatformRanking>();
     private ArrayList<CloudPlatformRanking> cloudPlatformWriteRankingList = new ArrayList<CloudPlatformRanking>();
     private ArrayList<CloudPlatformRanking> cloudPlatformTransRankingList = new ArrayList<CloudPlatformRanking>();
-    
+    private ArrayList<CloudPlatformRanking> cloudPlatformPingRankingList = new ArrayList<CloudPlatformRanking>();
     
     private List<CloudPlatform> cloudPlatformList = InitializeListener.getCloudPlatformList() ;// 云平台集合
 	
-	private CpuTestResultWeekDao cpuTestResultWeekDao = new CpuTestResultWeekDao();
-	private MemoryTestResultWeekDao memoryTestResultWeekDao = new MemoryTestResultWeekDao();
-	private FileIoTestResultWeekDao fileIoTestResultWeekDao = new FileIoTestResultWeekDao();
-	private OltpTestResultWeekDao oltpTestResultWeekDao = new OltpTestResultWeekDao();
+	private CpuClient cpuTestResultWeekDao = new CpuClient();
+	private MemClient memoryTestResultWeekDao = new MemClient();
+	private IozoneClient fileIoTestResultWeekDao = new IozoneClient();
+	private TpccClient oltpTestResultWeekDao = new TpccClient();
+	private PingClient pingTestResultWeekDao = new PingClient();
 	
 	private TimeIntervalUtil timeIntervalUtil = new TimeIntervalUtil();
 	private StringUtil stringUtil = new StringUtil();
@@ -72,12 +77,14 @@ public class SumGetchatAction extends ActionSupport{
 		cloudPlatformReadRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();   
 		cloudPlatformWriteRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
 		cloudPlatformTransRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
-
+		cloudPlatformPingRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
+		
 		Collections.sort(cloudPlatformCpuRankingList, new SortByCpu());
 		Collections.sort(cloudPlatformMemRankingList, new SortByMem());
 		Collections.sort(cloudPlatformReadRankingList, new SortByRead());
 		Collections.sort(cloudPlatformWriteRankingList, new SortByWrite());
 		Collections.sort(cloudPlatformTransRankingList, new SortByTransaction());
+		Collections.sort(cloudPlatformPingRankingList, new SortByPing());
 		
 //		logger.error("CPU");
 //		for(CloudPlatformRanking cloudPlatformRanking:cloudPlatformCpuRankingList){
@@ -152,11 +159,12 @@ public class SumGetchatAction extends ActionSupport{
 	        FutureTaskList.add(futureTask);
 	        //cloudPlatform = futureTask.get();
 		}
+		
 		for (FutureTask<CloudPlatformRanking> futureTask : FutureTaskList ){
 			futureTask.get();
 		}
 		Long sumend = System.currentTimeMillis();
-		logger.error("总共花费时间："+Long.toString(sumend-sumstart));
+//		logger.error("总共花费时间："+Long.toString(sumend-sumstart));
         
 		return cloudPlatformRankingList;
 	}
@@ -171,55 +179,98 @@ public class SumGetchatAction extends ActionSupport{
 			this.cloudPlatformRanking  = cloudPlatformRanking;
 		}
 		
-	    @Override
+	    @Override  //目前就是获得第一周，没有查看开始的时间，然后再结合过去的时间,这个开始时间可能需要设置为每周一0点0分
 	    public CloudPlatformRanking call() throws Exception {
+	    	Timestamp timeEnd = new Timestamp(Calendar.getInstance().getTimeInMillis());
+	    	Timestamp timeStart = new Timestamp(Calendar.getInstance().getTimeInMillis() - 1000*60*60*24*7); 
+	    	logger.error("开始时间:"+timeStart.getTime());
+	    	logger.error("结束时间:"+timeEnd.getTime());
 			start = System.currentTimeMillis();
 	    	Float ranking = 0.0f;
 	    	//获取cpu数据
-	    	CpuTestResultWeek cpuTestResultWeek = cpuTestResultWeekDao.findInstanceById(cloudPlatformRanking.getId());
-			cloudPlatformRanking.setTestTime(cpuTestResultWeek.getTestTime());
-			ranking = cpuTestResultWeek.getTotalTime();
-//			logger.error("cpuTotalTime:"+ranking);
-			ranking /= cpuTestResultWeek.getCount();
+	    	List<BeanCpu> cpuTestResultWeek = cpuTestResultWeekDao.findCpuByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
+			cloudPlatformRanking.setTestTime(timeStart);
+			if(cpuTestResultWeek.size() > 0){
+				for (BeanCpu beanCpu : cpuTestResultWeek){
+					ranking += beanCpu.getTotalTime();
+				}
+				ranking /= cpuTestResultWeek.size();
+			}
+			logger.error("cpuTotalTime:"+ranking);
+			logger.error("cpuTotalTime个数:"+cpuTestResultWeek.size());
 			cloudPlatformRanking.setCpu(ranking);
 			//获取mem数据
-			MemoryTestResultWeek memTestResultWeekList = memoryTestResultWeekDao.findInstanceById(cloudPlatformRanking.getId());
-			ranking = memTestResultWeekList.getTransferSpeed();
-//			logger.error("memgetTransferSpeed:"+ranking);
-			ranking /= memTestResultWeekList.getCount();
+			ranking = 0.0f;
+			List<BeanMem> memTestResultWeekList = memoryTestResultWeekDao.findMemByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
+			if(memTestResultWeekList.size() > 0){
+				for (BeanMem beanMem : memTestResultWeekList){
+					ranking += beanMem.getTransferSpeed();
+				}
+				ranking /= memTestResultWeekList.size();
+			}
+			logger.error("memgetTransferSpeed:"+ranking);
+			logger.error("memgetTransferSpeed个数:"+memTestResultWeekList.size());
 			cloudPlatformRanking.setMem(ranking);
 			//获取flie数据
-			List<FileIoTestResultWeek> fileTestResultWeekList = fileIoTestResultWeekDao.findInstanceById(cloudPlatformRanking.getId());
-			for (FileIoTestResultWeek fileIoTestResultWeek : fileTestResultWeekList){
-				if (fileIoTestResultWeek.getTestMode().equals("RNDRD")){
-					ranking = fileIoTestResultWeek.getTransferSpeed();
-//					logger.error("fileIoRNDRDgetTransferSpeed:"+ranking);
-					ranking /= fileIoTestResultWeek.getCount();
-					cloudPlatformRanking.setRndrd(ranking);
-				} else if (fileIoTestResultWeek.getTestMode().equals("RNDWR")){
-					ranking = fileIoTestResultWeek.getTransferSpeed();
-//					logger.error("fileIoRNDWRgetTransferSpeed:"+ranking);
-					ranking /= fileIoTestResultWeek.getCount();
-					cloudPlatformRanking.setRndwr(ranking);
+			Integer rankingRndrd = 0;
+			Integer rankingRndwr = 0;
+			List<BeanIozone> fileTestResultWeekList = fileIoTestResultWeekDao.findIoByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
+			if(fileTestResultWeekList.size() > 0){
+				for (BeanIozone beanIozone : fileTestResultWeekList){
+					rankingRndrd += beanIozone.getRandomRead();
+					rankingRndwr += beanIozone.getRandomWrite();
 				}
+				rankingRndrd /= fileTestResultWeekList.size();
+				rankingRndwr /= fileTestResultWeekList.size();
 			}
+			logger.error("rankingRndrd:"+rankingRndrd);
+			logger.error("rankingRndrd个数:"+fileTestResultWeekList.size());
+			logger.error("rankingRndwr:"+rankingRndwr);
+			logger.error("rankingRndwr个数:"+fileTestResultWeekList.size());
+			cloudPlatformRanking.setRndrd(rankingRndrd);
+			cloudPlatformRanking.setRndwr(rankingRndwr);
+			
 			//获取mysql数据
-			OltpTestResultWeek oltpTestResultWeek = oltpTestResultWeekDao.findInstanceById(cloudPlatformRanking.getId());
-			ranking = oltpTestResultWeek.getTransactionFrq();
-//			logger.error("OltpTestTransactionFrq:"+ranking);
-			ranking /= oltpTestResultWeek.getCount();
+			ranking = 0.0f;
+			List<BeanTpcc> oltpTestResultWeek = oltpTestResultWeekDao.findTpccByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
+			if(oltpTestResultWeek.size() > 0){
+				for (BeanTpcc beanTpcc : oltpTestResultWeek){
+					ranking += beanTpcc.getTpmc();
+				}
+				ranking /= oltpTestResultWeek.size();
+			}
+			logger.error("OltpTestTransactionFrq:"+ranking);
+			logger.error("OltpTestTransactionFrq个数:"+oltpTestResultWeek.size());
 			cloudPlatformRanking.setTransaction(ranking);
 //			logger.error("id:"+cloudPlatformRanking.getId()+"getRndrd："+cloudPlatformRanking.getRndrd()+"getRndwr："+cloudPlatformRanking.getRndwr()+"getTransaction"+cloudPlatformRanking.getTransaction()+"getCpu"+cloudPlatformRanking.getCpu()+"getMem"+cloudPlatformRanking.getMem());
+			
+			//获取ping数据
+			ranking = 0.0f;
+			List<BeanPing> pingTestResultWeek = pingTestResultWeekDao.findPingByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
+			logger.error("开始时间:"+timeStart.getTime());
+			logger.error("结束时间:"+timeEnd.getTime());
+			if(pingTestResultWeek.size() > 0){
+				for (BeanPing beanPing : pingTestResultWeek){
+					ranking += beanPing.getAvg();
+					logger.error("显示每一个的ping时间:"+beanPing.getAvg());
+				}
+				ranking /= pingTestResultWeek.size();
+			}
+			logger.error("pingTestResultWeek:"+ranking);
+			logger.error("pingTestResultWeek个数:"+pingTestResultWeek.size());
+			cloudPlatformRanking.setPing(ranking);
+			
 			Long end = System.currentTimeMillis();
-			logger.error("每一个线程花费时间："+Long.toString(end-start));
+//			logger.error("每一个线程花费时间："+Long.toString(end-start));
 			System.out.println("cloudPlatformRanking.getCloudPlatformName()"+cloudPlatformRanking.getCloudPlatformName());
+			System.out.println("cloudPlatformRanking.getId()"+cloudPlatformRanking.getId());
+			System.out.println("cloudPlatformRanking.getTestTime()"+cloudPlatformRanking.getTestTime());
 			System.out.println("cloudPlatformRanking.getCpu()"+cloudPlatformRanking.getCpu());
 			System.out.println("cloudPlatformRanking.getMem()"+cloudPlatformRanking.getMem());
 			System.out.println("cloudPlatformRanking.getRndrd()"+cloudPlatformRanking.getRndrd());
 			System.out.println("cloudPlatformRanking.getRndwr()"+cloudPlatformRanking.getRndwr());
-			System.out.println("cloudPlatformRanking.getTransaction("+cloudPlatformRanking.getTransaction());
-			System.out.println("cloudPlatformRanking.getId()"+cloudPlatformRanking.getId());
-			System.out.println("cloudPlatformRanking.getTestTime()"+cloudPlatformRanking.getTestTime());
+			System.out.println("cloudPlatformRanking.getTransaction()"+cloudPlatformRanking.getTransaction());
+			System.out.println("cloudPlatformRanking.getPing()"+cloudPlatformRanking.getPing());
 			return cloudPlatformRanking;
 	    }
 	}
@@ -277,6 +328,18 @@ public class SumGetchatAction extends ActionSupport{
 			 CloudPlatformRanking s1 = (CloudPlatformRanking) o1;
 			 CloudPlatformRanking s2 = (CloudPlatformRanking) o2;
 			 if (s1.getTransaction() > s2.getTransaction()){
+				  return -1;
+			  } else {
+				  return 1;
+			  }
+		 }
+		}
+	
+	private class SortByPing implements Comparator {
+		 public int compare(Object o1, Object o2) {
+			 CloudPlatformRanking s1 = (CloudPlatformRanking) o1;
+			 CloudPlatformRanking s2 = (CloudPlatformRanking) o2;
+			 if (s1.getPing() < s2.getPing()){
 				  return -1;
 			  } else {
 				  return 1;
@@ -345,8 +408,34 @@ public class SumGetchatAction extends ActionSupport{
 			ArrayList<CloudPlatformRanking> cloudPlatformTransRankingList) {
 		this.cloudPlatformTransRankingList = cloudPlatformTransRankingList;
 	}
-	
-	
 
+	public ArrayList<CloudPlatformRanking> getCloudPlatformPingRankingList() {
+		return cloudPlatformPingRankingList;
+	}
+
+	public void setCloudPlatformPingRankingList(
+			ArrayList<CloudPlatformRanking> cloudPlatformPingRankingList) {
+		this.cloudPlatformPingRankingList = cloudPlatformPingRankingList;
+	}
+	
+	public static void main(String[] args) {
+		long t = 1450612800000L;
+		longToTimestamp(t);
+	}
+	
+	public static void longToTimestamp(long t){
+		Timestamp timestamp = new Timestamp(t);
+		 String tsStr = "";   
+	     DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	     tsStr = sdf.format(timestamp); 
+	     System.out.println("转换后的timestamp:"+tsStr);
+	}
+	
+	public static void timestampToLong(String t){
+		Timestamp scurrtest = Timestamp.valueOf(t);
+		System.out.println("转换后的long:"+scurrtest.getTime());
+		
+	}
+	
 	
 }

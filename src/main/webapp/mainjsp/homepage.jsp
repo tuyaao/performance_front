@@ -15,17 +15,19 @@
 	<s:include value="/template/_bootbanner.jsp?index=home"/>
 	<div class="front-inner">
 		<div class="container">
-			<s:iterator value="{'trancharts','cpucharts','memcharts','readcharts','writecharts'}" id='chartsid' status='st'>
-				<s:if test="#st.first"><div class="col-md-12 col-xs-12"></s:if>
+			<s:iterator value="{'cpucharts','memcharts','readcharts','writecharts','trancharts','pingcharts'}" id='chartsid' status='st'>
+				<!-- <div class="col-md-12 col-xs-12"> -->
+				<s:if test="#st.first"><div class="col-md-6 col-xs-12"></s:if>
 				<s:else><div class="col-md-6 col-xs-12"></s:else>
 					<div class="panel panel-default front-panel">
 				    	<div class="panel-heading">
 	      					<h3 class="panel-title">
-	      						<s:if test="#st.count == 1">云主机性能对比(4核8G) - MySQL事务</s:if>
-	         					<s:elseif test="#st.count == 2">云主机性能对比(4核8G) - CPU</s:elseif>
-	         					<s:elseif test="#st.count == 3">云主机性能对比(4核8G) - 内存</s:elseif>
-	         					<s:elseif test="#st.count == 4">云主机性能对比(4核8G) - 硬盘随机读</s:elseif>
-	         					<s:elseif test="#st.count == 5">云主机性能对比(4核8G) - 硬盘随机写</s:elseif>	         				
+	      						<s:if test="#st.count == 1">云主机性能对比(4核8G) - CPU</s:if>
+	         					<s:elseif test="#st.count == 2">云主机性能对比(4核8G) - 内存</s:elseif>
+	         					<s:elseif test="#st.count == 3">云主机性能对比(4核8G) - 硬盘随机读</s:elseif>
+	         					<s:elseif test="#st.count == 4">云主机性能对比(4核8G) - 硬盘随机写</s:elseif>
+	         					<s:elseif test="#st.count == 5">云主机性能对比(4核8G) - MySQL事务</s:elseif>	
+	         					<s:elseif test="#st.count == 6">云主机性能对比(4核8G) - PING</s:elseif>         				
 	         					<span id="time<s:property value='chartsid' />" style="float: right"></span>
 	      					</h3>	      		
 	   					</div>
@@ -136,6 +138,7 @@ $(function(){
 	$("#loadingmemcharts").removeClass("hidden");
 	$("#loadingreadcharts").removeClass("hidden");
 	$("#loadingwritecharts").removeClass("hidden");
+	$("#loadingpingcharts").removeClass("hidden");
 	$("#loadingicon").removeClass("hidden");
 	$.post("homecompanyajax",{},function(data){
 		var company = data.cloudPlatformEntityList;
@@ -184,7 +187,7 @@ $(function(){
 			default:
 				break;
 		}
-
+			
 			$("#"+comId+"_vmpicture").attr("src",imageSrc);
 			$("#"+comId+"_vmsrc").attr("href","search/vmdetail?id="+comId);
 			$("#"+comId+"_vmname").attr("href","search/vmdetail?id="+comId);
@@ -199,6 +202,7 @@ $(function(){
 		var rankread = data.cloudPlatformReadRankingList;
 		var rankwrite = data.cloudPlatformWriteRankingList;
 		var ranktrans = data.cloudPlatformTransRankingList;
+		var rankPing = data.cloudPlatformPingRankingList;
 		var mydata = [];
 		var transactionx = [];		
 		var transactiondata = [];
@@ -210,12 +214,15 @@ $(function(){
 		var readdata = [];
 		var writex = [];
 		var writedata = [];
+		var pingx = [];
+		var pingdata = [];
 		var time = data.testUpToTime + " - " + data.testUpToTimeEnd;
 		$("#timetran").html(time);
 		$("#timecpu").html(time);
 		$("#timemem").html(time);
 		$("#timeread").html(time);
 		$("#timewrite").html(time);
+		$("#timeping").html(time);
 		for(var i=0; i<rankcpu.length; i++){
 			cpux.push(rankcpu[i].cloudPlatformName);
 			cpudata.push(rankcpu[i].cpu);
@@ -227,6 +234,8 @@ $(function(){
 			writedata.push(rankwrite[i].rndwr);
 			transactionx.push(ranktrans[i].cloudPlatformName);
 			transactiondata.push(ranktrans[i].transaction);
+			pingx.push(rankPing[i].cloudPlatformName);
+			pingdata.push(rankPing[i].ping);
 		}
 
 		var datatable = [];
@@ -269,6 +278,14 @@ $(function(){
 		datatable.push(dataline);
 		drawChart("writecharts", "随机写", writex, datatable, 1, "#24CBE5");
 		$("#loadingwritecharts").addClass("hidden");
+		var datatable = [];
+		dataline = {
+			name: "PING",
+			data: pingdata	
+		}
+		datatable.push(dataline);
+		drawChart("pingcharts", "PING", writex, datatable, 1, "#AA7700");
+		$("#loadingpingcharts").addClass("hidden");
 	});
 	
 	function drawChart(id, title, xdata, data, xstep, color) {
