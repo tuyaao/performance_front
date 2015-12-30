@@ -65,12 +65,12 @@
 				<div class="panel panel-default front-panel">
 				    <div class="panel-heading">
 	      				<h3 class="panel-title">
-	         				测试指标说明
+	         				测试方法&指标
 	      				</h3>
 	   				</div>
 	   				<div class="panel-body">
 						<div class="row">
-						<s:iterator value="{'cpu','memory','multi','mysql'}" id='instructionid' status='st'>
+						<s:iterator value="{'cpu','memory','multi','mysql','mysql'}" id='instructionid' status='st'>
 							<div class="col-md-6 col-xs-6" style="text-align: center; margin-bottom: 10px;">
 								<div class="media-left front-media-left">
 									<img src="images/<s:property value='instructionid' />.png" class="img-circle" width="100px" height="100px" border="0" align="middle">
@@ -101,14 +101,58 @@
 										得到的结果为每秒处理的事务数，读写请求数以及发生死锁数。</div>
 									</div>			         				
 		         				</s:elseif>
+		         				<s:elseif test="#st.count == 5">
+									<div class="media-body front-media-left-body">
+										<h4 class="media-heading" style="position: relative">PING</h4>
+										<div class="front-text-break" style="text-align: left;">此项测试针对网络性能，测试机对5个网站ping,计算得到结果的平均往返时延。</div>
+									</div>			         				
+		         				</s:elseif>
 							</div>
 						</s:iterator>
 						</div>
 	   				</div>
 				</div>
 			</div>
+			
+			<div class="col-md-12 col-xs-12" style="width: 50%">
+				<div class="panel panel-default front-panel">
+				    <div class="panel-heading">
+	      				<h3 class="panel-title">
+	         				测评机构介绍
+	      				</h3>
+	   				</div>
+	   				<div class="panel-body,">
+						<div class="row">
+						<div class="panel-heading" style="text-align: left; padding:0px 30px 20px 30px">
+						<br>北京邮电大学 网络与交换技术国家重点实验室 交换与智能控制研究中心 "自邮之翼"项目组。<br/>
+						<br>电子邮箱：contactus@free4lab.com<br/>
+						<br>地址：北京市海淀区西土城路10号北京邮电大学新科研楼五层。<br/>
+						</div>
+						</div>
+	   				</div>
+				</div>
+			</div>
+			
+			<div class="col-md-12 col-xs-12" style="width: 50%">
+				<div class="panel panel-default front-panel">
+				    <div class="panel-heading">
+	      				<h3 class="panel-title">
+	         				免责声明
+	      				</h3>
+	   				</div>
+	   				<div class="panel-body,">
+						<div class="row">
+						<div class="panel-heading" style="text-align: left; padding:10px 30px 10px 30px">
+						项目设立之初，我们把自己的目标定位为有独立性、普适性、公正性的第三方云主机测评项目。我们在较短的时间内建立了比较完善的测试构架，采用业界权威的测评工具，对CPU、内存、硬盘I/O、MySQL、网络进行测试。
+						在以后的一段时间内，我们还将引入更多的测评角度，进一步提高云主机测试的全面性。我们深知项目的发展离不开用户的关注与认可，
+						我们会终将秉承以客观事实的态度，公平、公正的原则，积极进取的服务理念，为广大用户提供更为全面、优质、公正的测评服务。
+						</div>
+						</div>
+	   				</div>
+				</div>
+			</div>
+			
 		</div>
-	</div>
 
 <script src="http://code.jquery.com/jquery.js"></script>
 <script type="text/javascript" src="js/bootstrap.min.js"></script>
