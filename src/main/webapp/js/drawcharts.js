@@ -83,8 +83,8 @@ function compareConfirm(id,name,cpu,ram){
 //    			$("#oltptranshighcharts").prev().removeClass("hidden");
 //    			chartdata("oltpdeadhighcharts", "MySQL—死锁", data.compareResultEntity.oltpDeadCurveList);
 //    			$("#oltpdeadhighcharts").prev().removeClass("hidden");
-    			$("#oltprdwr").removeClass("hidden");
-    			chartdata("oltprdwrhighcharts", "MySQL—读写", data.compareResultEntity.oltpRdWtCurveList);
+//    			$("#oltprdwr").removeClass("hidden");
+//    			chartdata("oltprdwrhighcharts", "MySQL—读写", data.compareResultEntity.oltpRdWtCurveList);
 //    			$("#oltprdwrhighcharts").prev().removeClass("hidden");
     		}
     		
@@ -96,7 +96,6 @@ function compareConfirm(id,name,cpu,ram){
 //    		}
     		
     		if(dataselect[4].checked && data.compareResultEntity.pingCurveList != null){
-    			alert("ping");
     			$("#ping").removeClass("hidden");
     			chartdata("pinghighcharts", "PING", data.compareResultEntity.pingCurveList); 			
     		}

@@ -35,8 +35,6 @@ public class SumGetchatAction extends ActionSupport{
 	
 	private static final long serialVersionUID = 1L;
 	private Logger logger = Logger.getLogger(SumGetchatAction.class);
-	private Integer vmSum = 0;//云主机总个数
-	private String upToTime = "upToTime";//截至时间
 	private String testUpToTime = "testUpToTime";//事务数测试表的截至时间的那一周的开始
 	private String testUpToTimeEnd = "testUpToTimeEnd";//事务数测试表的截至时间的那一周的现在
     private ArrayList<CloudPlatformRanking> cloudPlatformCpuRankingList = new ArrayList<CloudPlatformRanking>();
@@ -53,9 +51,6 @@ public class SumGetchatAction extends ActionSupport{
 	private IozoneClient fileIoTestResultWeekDao = new IozoneClient();
 	private TpccClient oltpTestResultWeekDao = new TpccClient();
 	private PingClient pingTestResultWeekDao = new PingClient();
-	
-	private TimeIntervalUtil timeIntervalUtil = new TimeIntervalUtil();
-	private StringUtil stringUtil = new StringUtil();
 	
 	long start = System.currentTimeMillis();
 	long end = System.currentTimeMillis();
@@ -106,6 +101,11 @@ public class SumGetchatAction extends ActionSupport{
 //		for(CloudPlatformRanking cloudPlatformRanking:cloudPlatformTransRankingList){
 //			logger.error(cloudPlatformRanking.getCloudPlatformName());
 //		}
+//		logger.error("Ping");
+//		for(CloudPlatformRanking cloudPlatformRanking:cloudPlatformPingRankingList){
+//			logger.error(cloudPlatformRanking.getPing());
+//			logger.error(cloudPlatformRanking.getCloudPlatformName());
+//		}
 		testUpToTime = getRankingListLastTime(cloudPlatformCpuRankingList);//这里假设其每周都有数据，否则应该+7判断，如果晚于今天，则是今天，否则是+7的日子
 //		logger.error(getRankingListLastTime(cloudPlatformCpuRankingList));
 //		logger.error(testUpToTime);
@@ -118,7 +118,7 @@ public class SumGetchatAction extends ActionSupport{
 			testUpToTimeEnd = StringUtil.timestamp2String(StringUtil.calendar2Timestamp(calendarEnd), 0);
 		}
 	    end = System.currentTimeMillis();
-	    logger.error("公花费总时间"+ Long.toString(end-start));
+	    logger.error("综述首页获取图表花费总时间"+ Long.toString(end-start));
 		return SUCCESS;
 	}
 
@@ -150,20 +150,19 @@ public class SumGetchatAction extends ActionSupport{
 	 * */
 	private ArrayList<CloudPlatformRanking> getRankingNew(List<CloudPlatform> cloudPlatformList) throws Exception{
 		ArrayList<CloudPlatformRanking> cloudPlatformRankingList = InitializeListener.getCloudPlatformRankingList();//这里需要保证每次使用都更新，否则就会是上一次的数据
-		Long sumstart = System.currentTimeMillis();
+//		Long sumstart = System.currentTimeMillis();
 		ArrayList<FutureTask<CloudPlatformRanking>> FutureTaskList = new ArrayList<FutureTask<CloudPlatformRanking>>();
 		for (CloudPlatformRanking cloudPlatform : cloudPlatformRankingList){
 			GetChatForEachVmTask task = new GetChatForEachVmTask(cloudPlatform);
 	        FutureTask<CloudPlatformRanking> futureTask = new FutureTask<CloudPlatformRanking>(task);
 	        ThreadPool.submitThread(futureTask);
 	        FutureTaskList.add(futureTask);
-	        //cloudPlatform = futureTask.get();
 		}
 		
 		for (FutureTask<CloudPlatformRanking> futureTask : FutureTaskList ){
 			futureTask.get();
 		}
-		Long sumend = System.currentTimeMillis();
+//		Long sumend = System.currentTimeMillis();
 //		logger.error("总共花费时间："+Long.toString(sumend-sumstart));
         
 		return cloudPlatformRankingList;
@@ -183,10 +182,11 @@ public class SumGetchatAction extends ActionSupport{
 	    public CloudPlatformRanking call() throws Exception {
 	    	Timestamp timeEnd = new Timestamp(Calendar.getInstance().getTimeInMillis());
 	    	Timestamp timeStart = new Timestamp(Calendar.getInstance().getTimeInMillis() - 1000*60*60*24*7); 
-	    	logger.error("开始时间:"+timeStart.getTime());
-	    	logger.error("结束时间:"+timeEnd.getTime());
+//	    	logger.error("开始时间:"+timeStart.getTime());
+//	    	logger.error("结束时间:"+timeEnd.getTime());
 			start = System.currentTimeMillis();
 	    	Float ranking = 0.0f;
+	    	
 	    	//获取cpu数据
 	    	List<BeanCpu> cpuTestResultWeek = cpuTestResultWeekDao.findCpuByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
 			cloudPlatformRanking.setTestTime(timeStart);
@@ -196,9 +196,10 @@ public class SumGetchatAction extends ActionSupport{
 				}
 				ranking /= cpuTestResultWeek.size();
 			}
-			logger.error("cpuTotalTime:"+ranking);
-			logger.error("cpuTotalTime个数:"+cpuTestResultWeek.size());
+//			logger.error("cpuTotalTime:"+ranking);
+//			logger.error("cpuTotalTime个数:"+cpuTestResultWeek.size());
 			cloudPlatformRanking.setCpu(ranking);
+			
 			//获取mem数据
 			ranking = 0.0f;
 			List<BeanMem> memTestResultWeekList = memoryTestResultWeekDao.findMemByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
@@ -208,9 +209,10 @@ public class SumGetchatAction extends ActionSupport{
 				}
 				ranking /= memTestResultWeekList.size();
 			}
-			logger.error("memgetTransferSpeed:"+ranking);
-			logger.error("memgetTransferSpeed个数:"+memTestResultWeekList.size());
+//			logger.error("memgetTransferSpeed:"+ranking);
+//			logger.error("memgetTransferSpeed个数:"+memTestResultWeekList.size());
 			cloudPlatformRanking.setMem(ranking);
+			
 			//获取flie数据
 			Integer rankingRndrd = 0;
 			Integer rankingRndwr = 0;
@@ -223,10 +225,10 @@ public class SumGetchatAction extends ActionSupport{
 				rankingRndrd /= fileTestResultWeekList.size();
 				rankingRndwr /= fileTestResultWeekList.size();
 			}
-			logger.error("rankingRndrd:"+rankingRndrd);
-			logger.error("rankingRndrd个数:"+fileTestResultWeekList.size());
-			logger.error("rankingRndwr:"+rankingRndwr);
-			logger.error("rankingRndwr个数:"+fileTestResultWeekList.size());
+//			logger.error("rankingRndrd:"+rankingRndrd);
+//			logger.error("rankingRndrd个数:"+fileTestResultWeekList.size());
+//			logger.error("rankingRndwr:"+rankingRndwr);
+//			logger.error("rankingRndwr个数:"+fileTestResultWeekList.size());
 			cloudPlatformRanking.setRndrd(rankingRndrd);
 			cloudPlatformRanking.setRndwr(rankingRndwr);
 			
@@ -239,38 +241,37 @@ public class SumGetchatAction extends ActionSupport{
 				}
 				ranking /= oltpTestResultWeek.size();
 			}
-			logger.error("OltpTestTransactionFrq:"+ranking);
-			logger.error("OltpTestTransactionFrq个数:"+oltpTestResultWeek.size());
-			cloudPlatformRanking.setTransaction(ranking);
+//			logger.error("OltpTestTransactionFrq:"+ranking);
+//			logger.error("OltpTestTransactionFrq个数:"+oltpTestResultWeek.size());
 //			logger.error("id:"+cloudPlatformRanking.getId()+"getRndrd："+cloudPlatformRanking.getRndrd()+"getRndwr："+cloudPlatformRanking.getRndwr()+"getTransaction"+cloudPlatformRanking.getTransaction()+"getCpu"+cloudPlatformRanking.getCpu()+"getMem"+cloudPlatformRanking.getMem());
+			cloudPlatformRanking.setTransaction(ranking);
 			
 			//获取ping数据
 			ranking = 0.0f;
 			List<BeanPing> pingTestResultWeek = pingTestResultWeekDao.findPingByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
-			logger.error("开始时间:"+timeStart.getTime());
-			logger.error("结束时间:"+timeEnd.getTime());
 			if(pingTestResultWeek.size() > 0){
 				for (BeanPing beanPing : pingTestResultWeek){
 					ranking += beanPing.getAvg();
-					logger.error("显示每一个的ping时间:"+beanPing.getAvg());
+//					logger.error("显示每一个的ping时间:"+beanPing.getAvg());
 				}
 				ranking /= pingTestResultWeek.size();
 			}
-			logger.error("pingTestResultWeek:"+ranking);
-			logger.error("pingTestResultWeek个数:"+pingTestResultWeek.size());
+//			logger.error("pingTestResultWeek:"+ranking);
+//			logger.error("pingTestResultWeek个数:"+pingTestResultWeek.size());
 			cloudPlatformRanking.setPing(ranking);
 			
-			Long end = System.currentTimeMillis();
+//			Long end = System.currentTimeMillis();
 //			logger.error("每一个线程花费时间："+Long.toString(end-start));
-			System.out.println("cloudPlatformRanking.getCloudPlatformName()"+cloudPlatformRanking.getCloudPlatformName());
-			System.out.println("cloudPlatformRanking.getId()"+cloudPlatformRanking.getId());
-			System.out.println("cloudPlatformRanking.getTestTime()"+cloudPlatformRanking.getTestTime());
-			System.out.println("cloudPlatformRanking.getCpu()"+cloudPlatformRanking.getCpu());
-			System.out.println("cloudPlatformRanking.getMem()"+cloudPlatformRanking.getMem());
-			System.out.println("cloudPlatformRanking.getRndrd()"+cloudPlatformRanking.getRndrd());
-			System.out.println("cloudPlatformRanking.getRndwr()"+cloudPlatformRanking.getRndwr());
-			System.out.println("cloudPlatformRanking.getTransaction()"+cloudPlatformRanking.getTransaction());
-			System.out.println("cloudPlatformRanking.getPing()"+cloudPlatformRanking.getPing());
+			
+//			System.out.println("cloudPlatformRanking.getCloudPlatformName()"+cloudPlatformRanking.getCloudPlatformName());
+//			System.out.println("cloudPlatformRanking.getId()"+cloudPlatformRanking.getId());
+//			System.out.println("cloudPlatformRanking.getTestTime()"+cloudPlatformRanking.getTestTime());
+//			System.out.println("cloudPlatformRanking.getCpu()"+cloudPlatformRanking.getCpu());
+//			System.out.println("cloudPlatformRanking.getMem()"+cloudPlatformRanking.getMem());
+//			System.out.println("cloudPlatformRanking.getRndrd()"+cloudPlatformRanking.getRndrd());
+//			System.out.println("cloudPlatformRanking.getRndwr()"+cloudPlatformRanking.getRndwr());
+//			System.out.println("cloudPlatformRanking.getTransaction()"+cloudPlatformRanking.getTransaction());
+//			System.out.println("cloudPlatformRanking.getPing()"+cloudPlatformRanking.getPing());
 			return cloudPlatformRanking;
 	    }
 	}
@@ -346,7 +347,6 @@ public class SumGetchatAction extends ActionSupport{
 			  }
 		 }
 		}
-	
 
 	public String getTestUpToTime() {
 		return testUpToTime;
@@ -417,25 +417,5 @@ public class SumGetchatAction extends ActionSupport{
 			ArrayList<CloudPlatformRanking> cloudPlatformPingRankingList) {
 		this.cloudPlatformPingRankingList = cloudPlatformPingRankingList;
 	}
-	
-	public static void main(String[] args) {
-		long t = 1450612800000L;
-		longToTimestamp(t);
-	}
-	
-	public static void longToTimestamp(long t){
-		Timestamp timestamp = new Timestamp(t);
-		 String tsStr = "";   
-	     DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-	     tsStr = sdf.format(timestamp); 
-	     System.out.println("转换后的timestamp:"+tsStr);
-	}
-	
-	public static void timestampToLong(String t){
-		Timestamp scurrtest = Timestamp.valueOf(t);
-		System.out.println("转换后的long:"+scurrtest.getTime());
-		
-	}
-	
 	
 }

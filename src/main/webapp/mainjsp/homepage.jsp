@@ -328,7 +328,7 @@ $(function(){
 			data: pingdata	
 		}
 		datatable.push(dataline);
-		drawChart("pingcharts", "PING", writex, datatable, 1, "#AA7700");
+		drawChart("pingcharts", "PING", pingx, datatable, 1, "#AA7700");
 		$("#loadingpingcharts").addClass("hidden");
 	});
 	

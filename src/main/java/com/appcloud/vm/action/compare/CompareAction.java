@@ -119,6 +119,13 @@ public class CompareAction extends ActionSupport {
 			        ThreadPool.submitThread(futureTaskSQL);
 			        FutureTaskList.add(futureTaskSQL);
 					break;
+				case 4:
+					// 填充一台虚拟机的时间-值
+					GetCurveForEachVmTask taskPing = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 4);
+			        FutureTask<CompareResultInstance> futureTaskPing = new FutureTask<CompareResultInstance>(taskPing);
+			        ThreadPool.submitThread(futureTaskPing);
+			        FutureTaskList.add(futureTaskPing);
+					break;
 				default:
 				}
 			}
@@ -198,6 +205,16 @@ public class CompareAction extends ActionSupport {
 					logger.error("oltp值："+ compareResultEntity.getOltpRdWtCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE));
 				}
 			}
+			
+			for(int k = 0; k <= compareResultEntity.getPingCurveList().get(0).getCurve().size(); k++){
+				logger.error("ping时间："+ compareResultEntity.getPingCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPTIME));
+				if (compareResultEntity.getPingCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE) == null){
+					logger.error("ping值："+ "为null");
+				} else {
+					logger.error("ping值："+ compareResultEntity.getPingCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE));
+				}
+			}
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}

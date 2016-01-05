@@ -38,7 +38,6 @@ public class PingClient extends AbstractClient<BeanPing>{
 		params.add("id", id);
 		params.add(BEGIN_TIME, start.getTime()+"");
 		params.add(END_TIME, end.getTime()+"");
-		
 		return (List<BeanPing>)getList(PATH, params);
 	}
 	
