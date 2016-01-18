@@ -27,10 +27,10 @@ import com.appcloud.vm.action.entity.VM48InforEntity;
 import com.appcloud.vm.common.CompareResultInstance;
 import com.appcloud.vm.common.CompareResultInstanceFactory;
 import com.appcloud.vm.common.Constants;
-import com.appcloud.vm.common.IntevalCalendarTimeStamp;
-import com.appcloud.vm.utils.InitializeListener;
+import com.appcloud.vm.common.InitializeListener;
+import com.appcloud.vm.common.ThreadPool;
+import com.appcloud.vm.utils.IntevalCalendarTimeStamp;
 import com.appcloud.vm.utils.StringUtil;
-import com.appcloud.vm.utils.ThreadPool;
 import com.appcloud.vm.utils.TimeIntervalUtil;
 import com.opensymphony.xwork2.ActionSupport;
 

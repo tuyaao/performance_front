@@ -1,4 +1,4 @@
-package com.appcloud.vm.utils;
+package com.appcloud.vm.common;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;

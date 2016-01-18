@@ -6,8 +6,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.appcloud.vm.action.entity.VM48InforEntity;
-import com.appcloud.vm.common.VmDetailClass;
-import com.appcloud.vm.utils.InitializeListener;
+import com.appcloud.vm.action.entity.VmDetailClass;
+import com.appcloud.vm.common.InitializeListener;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class GetVmDetailAction extends ActionSupport {

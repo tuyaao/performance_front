@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.appcloud.vm.action.entity.CloudPlatformEntity;
-import com.appcloud.vm.utils.InitializeListener;
+import com.appcloud.vm.common.InitializeListener;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class SumGetCompanyAction extends ActionSupport{

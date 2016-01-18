@@ -95,7 +95,7 @@
     </error-page>
     
     <listener>
-    <listener-class>com.appcloud.vm.utils.InitializeListener</listener-class>
+    <listener-class>com.appcloud.vm.common.InitializeListener</listener-class>
     </listener>
     
 </web-app>

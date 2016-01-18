@@ -4,11 +4,6 @@
           "http://struts.apache.org/dtds/struts-2.0.dtd">
 <struts>
     <package name="compare" namespace="/compare" extends="default">
-    <!-- 
-    <action name="ToCompare" class="com.appcloud.vm.action.sum.ToCompareAction">
-            <result>/compare/bycompany.jsp</result>
-    </action>
-     -->
      
        	<action name="companyaction" class="com.appcloud.vm.action.compare.CompareAction">
 			<result type="json"></result>

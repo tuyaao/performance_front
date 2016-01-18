@@ -13,7 +13,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 
 import com.appcloud.vm.action.dbentity.VMInstance;
-import com.appcloud.vm.utils.HibernateSessionFactory;
+import com.appcloud.vm.common.HibernateSessionFactory;
 
 public class VMInstanceDao {
 	

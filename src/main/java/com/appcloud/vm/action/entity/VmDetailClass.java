@@ -1,4 +1,4 @@
-package com.appcloud.vm.common;
+package com.appcloud.vm.action.entity;
 
 public class VmDetailClass {
 	

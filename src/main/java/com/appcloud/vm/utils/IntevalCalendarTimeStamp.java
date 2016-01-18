@@ -1,4 +1,4 @@
-package com.appcloud.vm.common;
+package com.appcloud.vm.utils;
 
 import java.sql.Timestamp;
 import java.util.Calendar;

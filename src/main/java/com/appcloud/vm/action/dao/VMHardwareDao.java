@@ -12,7 +12,7 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 
 import com.appcloud.vm.action.dbentity.VMhardware;
-import com.appcloud.vm.utils.HibernateSessionFactory;
+import com.appcloud.vm.common.HibernateSessionFactory;
 
 public class VMHardwareDao {
 	

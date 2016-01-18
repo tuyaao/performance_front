@@ -5,7 +5,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.appcloud.vm.utils.HibernateSessionFactory;
+import com.appcloud.vm.common.HibernateSessionFactory;
 
 public class BdLogDao {
 
