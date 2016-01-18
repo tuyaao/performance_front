@@ -16,7 +16,11 @@ public class CompareResultEntity {
 	private Boolean oltpTransCurveListAllNull = true;
 	private Boolean oltpDeadCurveListAllNull = true;
 	private Boolean oltpRdWtCurveListAllNull = true;
-	private Boolean pingCurveListAllNull = true;
+	private Boolean pingBaiduCurveListAllNull = true;
+	private Boolean ping163CurveListAllNull = true;
+	private Boolean pingQQCurveListAllNull = true;
+	private Boolean pingSinaCurveListAllNull = true;
+	private Boolean pingSouhuCurveListAllNull = true;
 	
 	private List<CompareResultInstance> cpuCurveList = new ArrayList<CompareResultInstance>();// cpu曲线集合
 	private List<CompareResultInstance> fileIoSeqrdCurveList = new ArrayList<CompareResultInstance>();// fileIo顺序读曲线集合
@@ -27,7 +31,11 @@ public class CompareResultEntity {
 	private List<CompareResultInstance> oltpTransCurveList = new ArrayList<CompareResultInstance>();// oltp事务曲线集合
 	private List<CompareResultInstance> oltpDeadCurveList = new ArrayList<CompareResultInstance>();// oltp死锁曲线集合
 	private List<CompareResultInstance> oltpRdWtCurveList = new ArrayList<CompareResultInstance>();// oltp死锁曲线集合
-	private List<CompareResultInstance> pingCurveList = new ArrayList<CompareResultInstance>();// ping曲线集合
+	private List<CompareResultInstance> pingBaiduCurveList = new ArrayList<CompareResultInstance>();// ping曲线集合
+	private List<CompareResultInstance> ping163CurveList = new ArrayList<CompareResultInstance>();// ping曲线集合
+	private List<CompareResultInstance> pingQQCurveList = new ArrayList<CompareResultInstance>();// ping曲线集合
+	private List<CompareResultInstance> pingSinaCurveList = new ArrayList<CompareResultInstance>();// ping曲线集合
+	private List<CompareResultInstance> pingSouhuCurveList = new ArrayList<CompareResultInstance>();// ping曲线集合
 	
 	public CompareResultEntity(){
 		
@@ -43,7 +51,11 @@ public class CompareResultEntity {
 		if (oltpTransCurveListAllNull) oltpTransCurveList = null;
 		if (oltpDeadCurveListAllNull) oltpDeadCurveList = null;
 		if (oltpRdWtCurveListAllNull) oltpRdWtCurveList = null;
-		if (pingCurveListAllNull) pingCurveList = null;
+		if (pingBaiduCurveListAllNull) pingBaiduCurveList = null;
+		if (ping163CurveListAllNull) ping163CurveList = null;
+		if (pingQQCurveListAllNull) pingQQCurveList = null;
+		if (pingSinaCurveListAllNull) pingSinaCurveList = null;
+		if (pingSouhuCurveListAllNull) pingSouhuCurveList = null;
 	}
 
 	public List<CompareResultInstance> getCpuCurveList() {
@@ -194,23 +206,84 @@ public class CompareResultEntity {
 		this.oltpRdWtCurveListAllNull = oltpRdWtCurveListAllNull;
 	}
 
-	public Boolean getPingCurveListAllNull() {
-		return pingCurveListAllNull;
+	public Boolean getPingBaiduCurveListAllNull() {
+		return pingBaiduCurveListAllNull;
 	}
 
-	public void setPingCurveListAllNull(Boolean pingCurveListAllNull) {
-		this.pingCurveListAllNull = pingCurveListAllNull;
+	public void setPingBaiduCurveListAllNull(Boolean pingBaiduCurveListAllNull) {
+		this.pingBaiduCurveListAllNull = pingBaiduCurveListAllNull;
 	}
 
-	public List<CompareResultInstance> getPingCurveList() {
-		return pingCurveList;
+	public Boolean getPing163CurveListAllNull() {
+		return ping163CurveListAllNull;
 	}
 
-	public void setPingCurveList(List<CompareResultInstance> pingCurveList) {
-		this.pingCurveList = pingCurveList;
+	public void setPing163CurveListAllNull(Boolean ping163CurveListAllNull) {
+		this.ping163CurveListAllNull = ping163CurveListAllNull;
 	}
 
-	
+	public Boolean getPingQQCurveListAllNull() {
+		return pingQQCurveListAllNull;
+	}
 
-	
+	public void setPingQQCurveListAllNull(Boolean pingQQCurveListAllNull) {
+		this.pingQQCurveListAllNull = pingQQCurveListAllNull;
+	}
+
+	public Boolean getPingSinaCurveListAllNull() {
+		return pingSinaCurveListAllNull;
+	}
+
+	public void setPingSinaCurveListAllNull(Boolean pingSinaCurveListAllNull) {
+		this.pingSinaCurveListAllNull = pingSinaCurveListAllNull;
+	}
+
+	public Boolean getPingSouhuCurveListAllNull() {
+		return pingSouhuCurveListAllNull;
+	}
+
+	public void setPingSouhuCurveListAllNull(Boolean pingSouhuCurveListAllNull) {
+		this.pingSouhuCurveListAllNull = pingSouhuCurveListAllNull;
+	}
+
+	public List<CompareResultInstance> getPingBaiduCurveList() {
+		return pingBaiduCurveList;
+	}
+
+	public void setPingBaiduCurveList(List<CompareResultInstance> pingBaiduCurveList) {
+		this.pingBaiduCurveList = pingBaiduCurveList;
+	}
+
+	public List<CompareResultInstance> getPing163CurveList() {
+		return ping163CurveList;
+	}
+
+	public void setPing163CurveList(List<CompareResultInstance> ping163CurveList) {
+		this.ping163CurveList = ping163CurveList;
+	}
+
+	public List<CompareResultInstance> getPingQQCurveList() {
+		return pingQQCurveList;
+	}
+
+	public void setPingQQCurveList(List<CompareResultInstance> pingQQCurveList) {
+		this.pingQQCurveList = pingQQCurveList;
+	}
+
+	public List<CompareResultInstance> getPingSinaCurveList() {
+		return pingSinaCurveList;
+	}
+
+	public void setPingSinaCurveList(List<CompareResultInstance> pingSinaCurveList) {
+		this.pingSinaCurveList = pingSinaCurveList;
+	}
+
+	public List<CompareResultInstance> getPingSouhuCurveList() {
+		return pingSouhuCurveList;
+	}
+
+	public void setPingSouhuCurveList(List<CompareResultInstance> pingSouhuCurveList) {
+		this.pingSouhuCurveList = pingSouhuCurveList;
+	}
+
 }

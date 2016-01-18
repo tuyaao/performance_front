@@ -11,10 +11,15 @@ public class CloudPlatformRanking {
 	private float Rndrd;
 	private float Rndwr;
 	private float transaction; //每秒可以执行的事务数
-	private float ping;
+	private float pingBaidu;
+	private float ping163;
+	private float pingSina;
+	private float pingQQ;
+	private float pingSouhu;
 	private Timestamp testTime; //测试时间
 	
-	public CloudPlatformRanking(Integer id, String cloudPlatformName, float cpu, float mem, float Rndrd, float Rndwr, float transaction, Timestamp testTime, float ping){
+	public CloudPlatformRanking(Integer id, String cloudPlatformName, float cpu, float mem, float Rndrd, float Rndwr, float transaction, Timestamp testTime, 
+			                    float pingBaidu, float ping163,  float pingSina, float pingQQ, float pingSouhu){
 		this.id = id;
 		this.cloudPlatformName = cloudPlatformName;
 		this.cpu = cpu;
@@ -23,7 +28,11 @@ public class CloudPlatformRanking {
 		this.Rndwr = Rndwr;
 		this.transaction = transaction;
 		this.testTime = testTime;
-		this.ping = ping;
+		this.pingBaidu = pingBaidu;
+		this.ping163 = ping163;
+		this.pingSina = pingSina;
+		this.pingQQ = pingQQ;
+		this.pingSouhu = pingSouhu;
 	}
 
 	public Integer getId() {
@@ -91,12 +100,44 @@ public class CloudPlatformRanking {
 		this.testTime = testTime;
 	}
 
-	public float getPing() {
-		return ping;
+	public float getPingBaidu() {
+		return pingBaidu;
 	}
 
-	public void setPing(float ping) {
-		this.ping = ping;
+	public void setPingBaidu(float pingBaidu) {
+		this.pingBaidu = pingBaidu;
 	}
-	
+
+	public float getPing163() {
+		return ping163;
+	}
+
+	public void setPing163(float ping163) {
+		this.ping163 = ping163;
+	}
+
+	public float getPingSina() {
+		return pingSina;
+	}
+
+	public void setPingSina(float pingSina) {
+		this.pingSina = pingSina;
+	}
+
+	public float getPingQQ() {
+		return pingQQ;
+	}
+
+	public void setPingQQ(float pingQQ) {
+		this.pingQQ = pingQQ;
+	}
+
+	public float getPingSouhu() {
+		return pingSouhu;
+	}
+
+	public void setPingSouhu(float pingSouhu) {
+		this.pingSouhu = pingSouhu;
+	}
+
 }

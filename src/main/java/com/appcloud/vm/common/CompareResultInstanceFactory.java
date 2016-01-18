@@ -242,45 +242,93 @@ public class CompareResultInstanceFactory {
 		return compareResultInstanceList;
 	}
 	
-	public CompareResultInstance getCompareResultPing(Integer id,
+	public List<CompareResultInstance> getCompareResultPing(Integer id,
 			Integer cloudPlatformId, Timestamp tsSelectTimeStart,
 			Timestamp tsSelectTimeEnd) throws Exception {
-		CompareResultInstance compareResultInstance = new CompareResultInstance();
-		compareResultInstance.setCompanyId(cloudPlatformId);
-		compareResultInstance.setInstanceId(id);
+		
+		List<CompareResultInstance> compareResultInstanceList = new ArrayList<CompareResultInstance>();
+		
+		CompareResultInstance PingBaiduTestInstance = new CompareResultInstance();
+		CompareResultInstance Ping163TestInstance = new CompareResultInstance();
+		CompareResultInstance PingQQTestInstance = new CompareResultInstance();
+		CompareResultInstance PingSinaTestInstance = new CompareResultInstance();
+		CompareResultInstance PingSouhuTestInstance = new CompareResultInstance();
 
-		LinkedHashMap<Calendar, Float> pingTestMap = new LinkedHashMap<Calendar, Float>();
+		PingBaiduTestInstance.setCompanyId(cloudPlatformId);
+		Ping163TestInstance.setCompanyId(cloudPlatformId);
+		PingQQTestInstance.setCompanyId(cloudPlatformId);
+		PingSinaTestInstance.setCompanyId(cloudPlatformId);
+		PingSouhuTestInstance.setCompanyId(cloudPlatformId);
+		PingBaiduTestInstance.setInstanceId(id);
+		Ping163TestInstance.setInstanceId(id);
+		PingQQTestInstance.setInstanceId(id);
+		PingSinaTestInstance.setInstanceId(id);
+		PingSouhuTestInstance.setInstanceId(id);
+
+		LinkedHashMap<Calendar, Float> pingBaiduTestMap = new LinkedHashMap<Calendar, Float>();
+		LinkedHashMap<Calendar, Float> ping163TestMap = new LinkedHashMap<Calendar, Float>();
+		LinkedHashMap<Calendar, Float> pingQQTestMap = new LinkedHashMap<Calendar, Float>();
+		LinkedHashMap<Calendar, Float> pingSinaTestMap = new LinkedHashMap<Calendar, Float>();
+		LinkedHashMap<Calendar, Float> pingSouhuTestMap = new LinkedHashMap<Calendar, Float>();
+		
+		
 		Long start = System.currentTimeMillis();
 //		logger.error("do here ping");
 		List<BeanPing> pingTestVm = pingClient.findPingByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
-		float sumtmp = 0;
-		float size = 0;
-		long time = 0;
-		if (pingTestVm.size() > 0){
-			compareResultEntity.setPingCurveListAllNull(false);
-			//这个初始化由于也需要判断是否为0，所以放在这里，但跟setfalse没关系
-			time = pingTestVm.get(0).getCreatedTime().getTime();
-		}
+
 //		logger.error("每一次获取ping的大概个数"+pingTestVm.size()/5);
 		for (int k = 0; k < pingTestVm.size(); k++) {
 			//获取ping 顺序的
 			BeanPing obj = pingTestVm.get(k);
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime((Date)obj.getCreatedTime());
-			if(obj.getCreatedTime().getTime() == time){
-				sumtmp = sumtmp + obj.getAvg();
-				size++;
-			}else{
-				pingTestMap.put(calendar, sumtmp/size );
-				sumtmp = obj.getAvg();size = 1;time = obj.getCreatedTime().getTime();
+			switch(obj.getDestIp()){
+			case Constants.BAiDU:
+				pingBaiduTestMap.put(calendar, obj.getAvg());
+				break;
+			case Constants.N163:
+				ping163TestMap.put(calendar, obj.getAvg());
+				break;
+			case Constants.SINA:
+				pingQQTestMap.put(calendar, obj.getAvg());
+				break;
+			case Constants.QQ:
+				pingSinaTestMap.put(calendar, obj.getAvg());
+				break;
+			case Constants.SOUHU:
+				pingSouhuTestMap.put(calendar, obj.getAvg());
+				break;
 			}
 //			logger.error("Ping初始查询时间："+stringUtil.cal2String(calendar)+"; 初始查询值："+pingTestVm.get(k).getAvg()+"");
 		}
-		compareResultInstance.setCurve(insertTestResultPing(pingTestMap,
+		
+		if (pingBaiduTestMap.size() > 0){
+		compareResultEntity.setPingBaiduCurveListAllNull(false);
+		compareResultEntity.setPing163CurveListAllNull(false);
+		compareResultEntity.setPingQQCurveListAllNull(false);
+		compareResultEntity.setPingSinaCurveListAllNull(false);
+		compareResultEntity.setPingSouhuCurveListAllNull(false);
+	    }
+		
+		PingBaiduTestInstance.setCurve(insertTestResultPing(pingBaiduTestMap,
 				TimeIntervalUtil.timestamp2Calendar(tsSelectTimeStart), TimeIntervalUtil.timestamp2Calendar(tsSelectTimeEnd)));
+		Ping163TestInstance.setCurve(insertTestResultPing(ping163TestMap,
+				TimeIntervalUtil.timestamp2Calendar(tsSelectTimeStart), TimeIntervalUtil.timestamp2Calendar(tsSelectTimeEnd)));
+		PingQQTestInstance.setCurve(insertTestResultPing(pingQQTestMap,
+				TimeIntervalUtil.timestamp2Calendar(tsSelectTimeStart), TimeIntervalUtil.timestamp2Calendar(tsSelectTimeEnd)));
+		PingSinaTestInstance.setCurve(insertTestResultPing(pingSinaTestMap,
+				TimeIntervalUtil.timestamp2Calendar(tsSelectTimeStart), TimeIntervalUtil.timestamp2Calendar(tsSelectTimeEnd)));
+		PingSouhuTestInstance.setCurve(insertTestResultPing(pingSouhuTestMap,
+				TimeIntervalUtil.timestamp2Calendar(tsSelectTimeStart), TimeIntervalUtil.timestamp2Calendar(tsSelectTimeEnd)));
+
+		compareResultInstanceList.add(PingBaiduTestInstance);
+		compareResultInstanceList.add(Ping163TestInstance);
+		compareResultInstanceList.add(PingQQTestInstance);
+		compareResultInstanceList.add(PingSinaTestInstance);
+		compareResultInstanceList.add(PingSouhuTestInstance);
 //		Long end = System.currentTimeMillis();
 //    	logger.error("每一次ping的获取时间"+Long.toString(end-start));
-		return compareResultInstance;
+		return compareResultInstanceList;
 	}
 	
 
@@ -418,6 +466,7 @@ public class CompareResultInstanceFactory {
 		}
 		Calendar startCal = Calendar.getInstance();
 		startCal = (Calendar) caSelectTimeStart.clone();
+		startCal.add(Calendar.HOUR, -1);
 		for (int i = 0; i < intevalHour; i++) {
 			Map<String, String> map = new LinkedHashMap<String, String>();
 			map.put(Constants.CURVEINSTANCEMAPTIME,
@@ -438,7 +487,6 @@ public class CompareResultInstanceFactory {
 	 *            截止时间：计算截止时间，这个应该是和上面的查询截止时间对应的，不可以随意传值 
 	 *            时间间隔：总共多少个小时，和返回的多少个map是固定的
 	 *            要求，传入的数据可以缺值，也可以无序，适用于map里面的map中的日历时间为无序的
-	 *            每个小时一个数据，ping实际是一个小时8次，但存到hbase里面是平均为一个点了
 	 * @return 返回List<Map<String,String>,map中第一对为时间，第二对为值，都是String,map个数和上值对应
 	 *         如果testMap为空，即这段没有任何数据，则返回空
 	 * 

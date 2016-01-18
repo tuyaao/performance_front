@@ -47,7 +47,13 @@ public class CompareAction extends ActionSupport {
 	private List<CompareResultInstance> oltptrans = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltpdead = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltprdwr = new ArrayList<CompareResultInstance>();
-	private List<CompareResultInstance> ping = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingBaidu = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> ping163 = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingQQ = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingSina = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingSouhu = new ArrayList<CompareResultInstance>();
+	
+	
 	
 	private ArrayList<VM48InforEntity> VM48InforList = InitializeListener.getVM48InforList();
 	
@@ -145,7 +151,11 @@ public class CompareAction extends ActionSupport {
 		compareResultEntity.setOltpTransCurveList(oltptrans);
 		compareResultEntity.setOltpDeadCurveList(oltpdead);
 		compareResultEntity.setOltpRdWtCurveList(oltprdwr);
-		compareResultEntity.setPingCurveList(ping);
+		compareResultEntity.setPingBaiduCurveList(pingBaidu);
+		compareResultEntity.setPingSinaCurveList(pingSina);
+		compareResultEntity.setPing163CurveList(ping163);
+		compareResultEntity.setPingSouhuCurveList(pingSouhu);
+		compareResultEntity.setPingQQCurveList(pingQQ);
 		
 		compareResultEntity.SetCurve();
 		cutCompareResultEntityCurveEnd(compareResultEntity);
@@ -206,12 +216,12 @@ public class CompareAction extends ActionSupport {
 				}
 			}
 			
-			for(int k = 0; k <= compareResultEntity.getPingCurveList().get(0).getCurve().size(); k++){
-				logger.error("ping时间："+ compareResultEntity.getPingCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPTIME));
-				if (compareResultEntity.getPingCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE) == null){
+			for(int k = 0; k <= compareResultEntity.getPingBaiduCurveList().get(0).getCurve().size(); k++){
+				logger.error("ping时间："+ compareResultEntity.getPingBaiduCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPTIME));
+				if (compareResultEntity.getPingBaiduCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE) == null){
 					logger.error("ping值："+ "为null");
 				} else {
-					logger.error("ping值："+ compareResultEntity.getPingCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE));
+					logger.error("ping值："+ compareResultEntity.getPingBaiduCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE));
 				}
 			}
 			
@@ -266,7 +276,12 @@ public class CompareAction extends ActionSupport {
 				oltprdwr.add(compareResultOltpList.get(2));
 				break;
 			case 4:
-				ping.add(compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd));
+				List<CompareResultInstance> compareResultpingList = compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd);
+				pingBaidu.add(compareResultpingList.get(0));
+				ping163.add(compareResultpingList.get(1));
+				pingQQ.add(compareResultpingList.get(2));
+				pingSina.add(compareResultpingList.get(3));
+				pingSouhu.add(compareResultpingList.get(4));
 				break;
 			default:
 			}
@@ -291,7 +306,11 @@ public class CompareAction extends ActionSupport {
 		cutCurveEnd(compareResultEntity.getOltpRdWtCurveList());
 		cutCurveEnd(compareResultEntity.getOltpTransCurveList());
 		cutCurveEnd(compareResultEntity.getOltpDeadCurveList());
-		cutCurveEnd(compareResultEntity.getPingCurveList());
+		cutCurveEnd(compareResultEntity.getPingBaiduCurveList());
+		cutCurveEnd(compareResultEntity.getPing163CurveList());
+		cutCurveEnd(compareResultEntity.getPingQQCurveList());
+		cutCurveEnd(compareResultEntity.getPingSinaCurveList());
+		cutCurveEnd(compareResultEntity.getPingSouhuCurveList());
 	}
 	
 	/**
@@ -369,17 +388,49 @@ public class CompareAction extends ActionSupport {
 	public void setCompareResultEntity(CompareResultEntity compareResultEntity) {
 		this.compareResultEntity = compareResultEntity;
 	}
+	
+	public List<CompareResultInstance> getPingBaidu() {
+		return pingBaidu;
+	}
+
+	public void setPingBaidu(List<CompareResultInstance> pingBaidu) {
+		this.pingBaidu = pingBaidu;
+	}
+
+	public List<CompareResultInstance> getPing163() {
+		return ping163;
+	}
+
+	public void setPing163(List<CompareResultInstance> ping163) {
+		this.ping163 = ping163;
+	}
+
+	public List<CompareResultInstance> getPingQQ() {
+		return pingQQ;
+	}
+
+	public void setPingQQ(List<CompareResultInstance> pingQQ) {
+		this.pingQQ = pingQQ;
+	}
+
+	public List<CompareResultInstance> getPingSina() {
+		return pingSina;
+	}
+
+	public void setPingSina(List<CompareResultInstance> pingSina) {
+		this.pingSina = pingSina;
+	}
+
+	public List<CompareResultInstance> getPingSouhu() {
+		return pingSouhu;
+	}
+
+	public void setPingSouhu(List<CompareResultInstance> pingSouhu) {
+		this.pingSouhu = pingSouhu;
+	}
 
 	public static void main(String[] args) throws Exception {
 
 	}
 
-	public List<CompareResultInstance> getPing() {
-		return ping;
-	}
-
-	public void setPing(List<CompareResultInstance> ping) {
-		this.ping = ping;
-	}
-	
 }

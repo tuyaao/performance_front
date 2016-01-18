@@ -292,7 +292,7 @@ public class ExportExcelAction extends ActionSupport {
 		    	nameList = new ArrayList<String>();
 				timeList = new ArrayList<String>();
 				valueList1 = new ArrayList<String>();
-				List<CompareResultInstance> pingCurveList = compareResultEntity.getPingCurveList();//所有的曲线
+				List<CompareResultInstance> pingCurveList = compareResultEntity.getPingBaiduCurveList();//所有的曲线
 				for (int i = 0; null!= pingCurveList && i < pingCurveList.size(); i++){ //单条曲线
 					List<Map<String,String>> curve = pingCurveList.get(i).getCurve();//每一条曲线
 					String InstanceName = getNameById(pingCurveList.get(i).getCompanyId(), pingCurveList.get(i).getInstanceId());
@@ -484,7 +484,7 @@ public class ExportExcelAction extends ActionSupport {
 				oltprdwr.add(compareResultOltpList.get(2));
 				break;
 			case 4:
-				ping.add(compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd));
+				ping.add(compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd).get(0));
 				break;
 			default:
 			}

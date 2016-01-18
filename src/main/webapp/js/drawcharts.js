@@ -6,6 +6,13 @@ var myname = [];
 var dataForExportExcel;
 var dataselect = document.getElementsByName("dataselect");//需要查询的指标
 
+var rankPing = null;
+var rankPingBaidu = null;
+var rankPing163 = null;
+var rankPingSina = null;
+var rankPingQQ = null;
+var rankPingSouhu = null;
+
 function compareConfirm(id,name,cpu,ram){
 	$("#cpu").addClass("hidden");
 	$("#memory").addClass("hidden");
@@ -95,9 +102,15 @@ function compareConfirm(id,name,cpu,ram){
 //    			alert("data.compareResultEntity.pingCurveList != null");
 //    		}
     		
-    		if(dataselect[4].checked && data.compareResultEntity.pingCurveList != null){
+    		if(dataselect[4].checked && data.compareResultEntity.pingBaiduCurveList != null){
     			$("#ping").removeClass("hidden");
-    			chartdata("pinghighcharts", "PING", data.compareResultEntity.pingCurveList); 			
+    			rankPing = data.compareResultEntity.pingBaiduCurveList;
+				rankPingBaidu = data.compareResultEntity.pingBaiduCurveList;
+				rankPing163 = data.compareResultEntity.ping163CurveList;
+				rankPingSina = data.compareResultEntity.pingSinaCurveList;
+				rankPingQQ = data.compareResultEntity.pingQQCurveList;
+				rankPingSouhu = data.compareResultEntity.pingSouhuCurveList;
+    			chartdata("pinghighcharts", "PING", rankPing); 			
     		}
     		$("#loadingcharts").addClass("hidden");
     	});
@@ -232,6 +245,29 @@ function configChartOptions(holderid, title, xdata, datas, xstep) {
     };
     return chartOptions;
   }
+
+function changePingChart() {
+	var objS = document.getElementById("pingchartselect");
+	var grade = objS.options[objS.selectedIndex].id;
+	switch (grade) {
+	case "optionbaidu":
+		rankPing = rankPingBaidu;
+		break;
+	case "option163":
+		rankPing = rankPing163;
+		break;
+	case "optionsina":
+		rankPing = rankPingSina;
+		break;
+	case "optionqq":
+		rankPing = rankPingQQ;
+		break;
+	case "optionsouhu":
+		rankPing = rankPingSouhu;
+		break;
+	}
+	chartdata("pinghighcharts", "PING", rankPing); 			
+}
 
 function exportVmExcel(ele) {
 	var hostselecttxt = ",";

@@ -1,8 +1,6 @@
 package com.appcloud.vm.action.sum;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -15,10 +13,10 @@ import org.apache.log4j.Logger;
 
 import com.appcloud.vm.action.dbentity.CloudPlatform;
 import com.appcloud.vm.action.entity.CloudPlatformRanking;
+import com.appcloud.vm.common.Constants;
 import com.appcloud.vm.utils.InitializeListener;
 import com.appcloud.vm.utils.StringUtil;
 import com.appcloud.vm.utils.ThreadPool;
-import com.appcloud.vm.utils.TimeIntervalUtil;
 import com.free4lab.monitorproxy.hbasetemp.BeanCpu;
 import com.free4lab.monitorproxy.hbasetemp.BeanIozone;
 import com.free4lab.monitorproxy.hbasetemp.BeanMem;
@@ -42,7 +40,11 @@ public class SumGetchatAction extends ActionSupport{
     private ArrayList<CloudPlatformRanking> cloudPlatformReadRankingList = new ArrayList<CloudPlatformRanking>();
     private ArrayList<CloudPlatformRanking> cloudPlatformWriteRankingList = new ArrayList<CloudPlatformRanking>();
     private ArrayList<CloudPlatformRanking> cloudPlatformTransRankingList = new ArrayList<CloudPlatformRanking>();
-    private ArrayList<CloudPlatformRanking> cloudPlatformPingRankingList = new ArrayList<CloudPlatformRanking>();
+    private ArrayList<CloudPlatformRanking> cloudPlatformPingBaiduRankingList = new ArrayList<CloudPlatformRanking>();
+    private ArrayList<CloudPlatformRanking> cloudPlatformPing163RankingList = new ArrayList<CloudPlatformRanking>();
+    private ArrayList<CloudPlatformRanking> cloudPlatformPingSinaRankingList = new ArrayList<CloudPlatformRanking>();
+    private ArrayList<CloudPlatformRanking> cloudPlatformPingQQRankingList = new ArrayList<CloudPlatformRanking>();
+    private ArrayList<CloudPlatformRanking> cloudPlatformPingSouhuRankingList = new ArrayList<CloudPlatformRanking>();
     
     private List<CloudPlatform> cloudPlatformList = InitializeListener.getCloudPlatformList() ;// 云平台集合
 	
@@ -72,14 +74,22 @@ public class SumGetchatAction extends ActionSupport{
 		cloudPlatformReadRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();   
 		cloudPlatformWriteRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
 		cloudPlatformTransRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
-		cloudPlatformPingRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
+		cloudPlatformPingBaiduRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
+		cloudPlatformPing163RankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
+		cloudPlatformPingSinaRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
+		cloudPlatformPingQQRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
+		cloudPlatformPingSouhuRankingList = (ArrayList<CloudPlatformRanking>)cloudPlatformCpuRankingList.clone();
 		
 		Collections.sort(cloudPlatformCpuRankingList, new SortByCpu());
 		Collections.sort(cloudPlatformMemRankingList, new SortByMem());
 		Collections.sort(cloudPlatformReadRankingList, new SortByRead());
 		Collections.sort(cloudPlatformWriteRankingList, new SortByWrite());
 		Collections.sort(cloudPlatformTransRankingList, new SortByTransaction());
-		Collections.sort(cloudPlatformPingRankingList, new SortByPing());
+		Collections.sort(cloudPlatformPingBaiduRankingList, new SortByPingBaidu());
+		Collections.sort(cloudPlatformPing163RankingList, new SortByPing163());
+		Collections.sort(cloudPlatformPingSinaRankingList, new SortByPingSina());
+		Collections.sort(cloudPlatformPingQQRankingList, new SortByPingQQ());
+		Collections.sort(cloudPlatformPingSouhuRankingList, new SortByPingSouhu());
 		
 //		logger.error("CPU");
 //		for(CloudPlatformRanking cloudPlatformRanking:cloudPlatformCpuRankingList){
@@ -247,18 +257,46 @@ public class SumGetchatAction extends ActionSupport{
 			cloudPlatformRanking.setTransaction(ranking);
 			
 			//获取ping数据
-			ranking = 0.0f;
+			float rankingBAiDU = 0.0f;
+			float rankingN163 = 0.0f;
+			float rankingSINA = 0.0f;
+			float rankingQQ = 0.0f;
+			float rankingSOUHU = 0.0f;
 			List<BeanPing> pingTestResultWeek = pingTestResultWeekDao.findPingByIdTime(cloudPlatformRanking.getId()+"", timeStart, timeEnd);
 			if(pingTestResultWeek.size() > 0){
 				for (BeanPing beanPing : pingTestResultWeek){
-					ranking += beanPing.getAvg();
+					switch(beanPing.getDestIp()){
+					case Constants.BAiDU:
+						rankingBAiDU += beanPing.getAvg();
+						break;
+					case Constants.N163:
+						rankingN163 += beanPing.getAvg();
+						break;
+					case Constants.SINA:
+						rankingSINA += beanPing.getAvg();
+						break;
+					case Constants.QQ:
+						rankingQQ += beanPing.getAvg();
+						break;
+					case Constants.SOUHU:
+						rankingSOUHU += beanPing.getAvg();
+						break;
+					}
 //					logger.error("显示每一个的ping时间:"+beanPing.getAvg());
 				}
-				ranking /= pingTestResultWeek.size();
+				rankingBAiDU /= pingTestResultWeek.size()/5;
+				rankingN163 /= pingTestResultWeek.size()/5;
+				rankingSINA /= pingTestResultWeek.size()/5;
+				rankingQQ /= pingTestResultWeek.size()/5;
+				rankingSOUHU /= pingTestResultWeek.size()/5;
 			}
 //			logger.error("pingTestResultWeek:"+ranking);
 //			logger.error("pingTestResultWeek个数:"+pingTestResultWeek.size());
-			cloudPlatformRanking.setPing(ranking);
+			cloudPlatformRanking.setPingBaidu(rankingBAiDU);
+			cloudPlatformRanking.setPing163(rankingN163);
+			cloudPlatformRanking.setPingSina(rankingSINA);
+			cloudPlatformRanking.setPingQQ(rankingQQ);
+			cloudPlatformRanking.setPingSouhu(rankingSOUHU);
 			
 //			Long end = System.currentTimeMillis();
 //			logger.error("每一个线程花费时间："+Long.toString(end-start));
@@ -336,18 +374,66 @@ public class SumGetchatAction extends ActionSupport{
 		 }
 		}
 	
-	private class SortByPing implements Comparator {
+	private class SortByPingBaidu implements Comparator {
 		 public int compare(Object o1, Object o2) {
 			 CloudPlatformRanking s1 = (CloudPlatformRanking) o1;
 			 CloudPlatformRanking s2 = (CloudPlatformRanking) o2;
-			 if (s1.getPing() < s2.getPing()){
+			 if (s1.getPingBaidu() < s2.getPingBaidu()){
 				  return -1;
 			  } else {
 				  return 1;
 			  }
 		 }
 		}
-
+	
+	private class SortByPing163 implements Comparator {
+		 public int compare(Object o1, Object o2) {
+			 CloudPlatformRanking s1 = (CloudPlatformRanking) o1;
+			 CloudPlatformRanking s2 = (CloudPlatformRanking) o2;
+			 if (s1.getPing163() < s2.getPing163()){
+				  return -1;
+			  } else {
+				  return 1;
+			  }
+		 }
+		}
+	
+	private class SortByPingQQ implements Comparator {
+		 public int compare(Object o1, Object o2) {
+			 CloudPlatformRanking s1 = (CloudPlatformRanking) o1;
+			 CloudPlatformRanking s2 = (CloudPlatformRanking) o2;
+			 if (s1.getPingQQ() < s2.getPingQQ()){
+				  return -1;
+			  } else {
+				  return 1;
+			  }
+		 }
+		}
+	
+	private class SortByPingSina implements Comparator {
+		 public int compare(Object o1, Object o2) {
+			 CloudPlatformRanking s1 = (CloudPlatformRanking) o1;
+			 CloudPlatformRanking s2 = (CloudPlatformRanking) o2;
+			 if (s1.getPingSina() < s2.getPingSina()){
+				  return -1;
+			  } else {
+				  return 1;
+			  }
+		 }
+		}
+	
+	private class SortByPingSouhu implements Comparator {
+		 public int compare(Object o1, Object o2) {
+			 CloudPlatformRanking s1 = (CloudPlatformRanking) o1;
+			 CloudPlatformRanking s2 = (CloudPlatformRanking) o2;
+			 if (s1.getPingSouhu() < s2.getPingSouhu()){
+				  return -1;
+			  } else {
+				  return 1;
+			  }
+		 }
+		}
+	
 	public String getTestUpToTime() {
 		return testUpToTime;
 	}
@@ -409,13 +495,50 @@ public class SumGetchatAction extends ActionSupport{
 		this.cloudPlatformTransRankingList = cloudPlatformTransRankingList;
 	}
 
-	public ArrayList<CloudPlatformRanking> getCloudPlatformPingRankingList() {
-		return cloudPlatformPingRankingList;
+	public ArrayList<CloudPlatformRanking> getCloudPlatformPingBaiduRankingList() {
+		return cloudPlatformPingBaiduRankingList;
 	}
 
-	public void setCloudPlatformPingRankingList(
-			ArrayList<CloudPlatformRanking> cloudPlatformPingRankingList) {
-		this.cloudPlatformPingRankingList = cloudPlatformPingRankingList;
+	public void setCloudPlatformPingBaiduRankingList(
+			ArrayList<CloudPlatformRanking> cloudPlatformPingBaiduRankingList) {
+		this.cloudPlatformPingBaiduRankingList = cloudPlatformPingBaiduRankingList;
 	}
+
+	public ArrayList<CloudPlatformRanking> getCloudPlatformPing163RankingList() {
+		return cloudPlatformPing163RankingList;
+	}
+
+	public void setCloudPlatformPing163RankingList(
+			ArrayList<CloudPlatformRanking> cloudPlatformPing163RankingList) {
+		this.cloudPlatformPing163RankingList = cloudPlatformPing163RankingList;
+	}
+
+	public ArrayList<CloudPlatformRanking> getCloudPlatformPingSinaRankingList() {
+		return cloudPlatformPingSinaRankingList;
+	}
+
+	public void setCloudPlatformPingSinaRankingList(
+			ArrayList<CloudPlatformRanking> cloudPlatformPingSinaRankingList) {
+		this.cloudPlatformPingSinaRankingList = cloudPlatformPingSinaRankingList;
+	}
+
+	public ArrayList<CloudPlatformRanking> getCloudPlatformPingQQRankingList() {
+		return cloudPlatformPingQQRankingList;
+	}
+
+	public void setCloudPlatformPingQQRankingList(
+			ArrayList<CloudPlatformRanking> cloudPlatformPingQQRankingList) {
+		this.cloudPlatformPingQQRankingList = cloudPlatformPingQQRankingList;
+	}
+
+	public ArrayList<CloudPlatformRanking> getCloudPlatformPingSouhuRankingList() {
+		return cloudPlatformPingSouhuRankingList;
+	}
+
+	public void setCloudPlatformPingSouhuRankingList(
+			ArrayList<CloudPlatformRanking> cloudPlatformPingSouhuRankingList) {
+		this.cloudPlatformPingSouhuRankingList = cloudPlatformPingSouhuRankingList;
+	}
+
 	
 }

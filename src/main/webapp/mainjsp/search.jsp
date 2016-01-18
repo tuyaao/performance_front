@@ -17,7 +17,7 @@
 		<div class="container">
 			<div class="panel panel-default front-panel">
 				<div class="panel-heading">
-      				<h3 class="panel-title">
+      				<h3 class="panel-title" style="font-weight: bold;">
          				云主机查询
       				</h3>
    				</div>

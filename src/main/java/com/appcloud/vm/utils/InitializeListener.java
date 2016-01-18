@@ -152,7 +152,7 @@ public class InitializeListener implements ServletContextListener{
 	 */
 	private void iniCloudPlatformRankingList( ArrayList<VM48InforEntity> VM48InforList ) throws Exception{
 		for( VM48InforEntity vM48InforEntity : VM48InforList ){
-			CloudPlatformRanking cloudPlatformRanking = new CloudPlatformRanking( vM48InforEntity.getId(), vM48InforEntity.getPlatformName(), 0f, 0f, 0f, 0f, 0f, null, 0f);
+			CloudPlatformRanking cloudPlatformRanking = new CloudPlatformRanking( vM48InforEntity.getId(), vM48InforEntity.getPlatformName(), 0f, 0f, 0f, 0f, 0f, null, 0f, 0f, 0f, 0f, 0f);
 			cloudPlatformRankingList.add(cloudPlatformRanking);
 		}
 	}

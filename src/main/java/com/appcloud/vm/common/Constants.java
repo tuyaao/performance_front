@@ -11,6 +11,13 @@ import com.free4lab.utils.account.ConfigurationUtil;
 
 
 public class Constants {
+	//Ping
+	public static final String BAiDU = "www.baidu.com";
+	public static final String N163= "www.163.com";
+	public static final String SINA = "www.sina.com.cn";
+	public static final String QQ = "www.qq.com";
+	public static final String SOUHU = "www.sohu.com";
+	
 	//session
 	public static final String UserID = "uid";
 	public static final String UserEmail= "email";
