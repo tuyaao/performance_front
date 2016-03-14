@@ -1,5 +1,6 @@
 package com.free4lab.monitorproxy.restclient;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -18,17 +19,19 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public abstract class AbstractClient<T> {
-	
-	protected static final String BEGIN_TIME = "btime";
-	protected static final String END_TIME = "etime";
 
-	protected Logger logger = LoggerFactory.getLogger(AbstractClient.class);
+	private static final String BEGIN_TIME = "btime";
+	private static final String END_TIME = "etime";
 
-	protected WebResource resource;
+	private Logger logger = LoggerFactory.getLogger(getType());
+
+	private WebResource resource;
 
 	protected abstract Class<?> getType();// 返回的类型，可以是自定义热任何类型，只要和server的对应上即可
 
 	protected abstract GenericType<List<T>> getGenericType();
+
+	protected abstract String getByIdTimePath();
 
 	// 另一个 WebResouce 类的方法 header() 可以给你的请求添加 HTTP 头部信息。
 	public AbstractClient() {
@@ -39,6 +42,16 @@ public abstract class AbstractClient<T> {
 		ClientConfig cc = new DefaultClientConfig();
 		Client c = Client.create(cc);
 		resource = c.resource(baseURI);
+	}
+
+	// 这个其实和业务有关，应该再抽象一层
+	protected List<T> findByIdTime(String id, Timestamp start, Timestamp end) {
+		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+		params.add("id", id);
+		params.add(BEGIN_TIME, start.getTime() + "");
+		params.add(END_TIME, end.getTime() + "");
+
+		return (List<T>) getList(getByIdTimePath(), params);
 	}
 
 	// get方法，只根据路径获取返回值，返回值是预设类型
@@ -138,7 +151,7 @@ public abstract class AbstractClient<T> {
 		}
 	}
 
-	// get方法，只根据路径获取返回值，返回值是任意类型，没有使用泛型传过来的预定义类型
+	// get方法，只根据路径获取返回值，返回值是任意类型，不一定是泛型所定义的类型
 	protected Object otherGet(Class<?> type, String path) {
 		try {
 			return resource.path(path).get(type);// get(返回类型)
@@ -300,5 +313,5 @@ public abstract class AbstractClient<T> {
 			}
 		}
 	}
-	
+
 }

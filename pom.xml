@@ -146,6 +146,9 @@
 				<version>6.1.21</version>
 				<configuration>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<!-- <webDefaultXml>src/main/webapp/WEB-INF/web.xml</webDefaultXml>
+					<contextXml>/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+					-->
 					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
 					<!-- <contextPath>/</contextPath> -->
 				</configuration>

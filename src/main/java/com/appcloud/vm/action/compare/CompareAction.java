@@ -10,6 +10,7 @@ import java.util.concurrent.FutureTask;
 
 import org.apache.log4j.Logger;
 
+import com.appcloud.vm.action.entity.CompareResultAbstractEntity;
 import com.appcloud.vm.action.entity.CompareResultEntity;
 import com.appcloud.vm.action.entity.VM48InforEntity;
 import com.appcloud.vm.common.CompareResultInstance;
@@ -53,8 +54,6 @@ public class CompareAction extends ActionSupport {
 	private List<CompareResultInstance> pingSina = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> pingSouhu = new ArrayList<CompareResultInstance>();
 	
-	
-	
 	private ArrayList<VM48InforEntity> VM48InforList = InitializeListener.getVM48InforList();
 	
 	public String execute() throws Exception {
@@ -96,44 +95,29 @@ public class CompareAction extends ActionSupport {
 		for (int i = 0; i < instanceSelectArray.length; i++) {
 			// 填充多个虚拟机的时间-值
 			for (String indicatorSelect : indicatorSelectArray) {
+				// 填充一台虚拟机的时间-值
+				GetCurveForEachVmTask task = null;
 				switch (Integer.valueOf(indicatorSelect)) {
 				case 0:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskCPU = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 0);
-			        FutureTask<CompareResultInstance> futureTaskCPU = new FutureTask<CompareResultInstance>(taskCPU);
-			        ThreadPool.submitThread(futureTaskCPU);
-			        FutureTaskList.add(futureTaskCPU);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 0);
 					break;
 				case 1:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskMEM = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 1);
-			        FutureTask<CompareResultInstance> futureTaskMEM = new FutureTask<CompareResultInstance>(taskMEM);
-			        ThreadPool.submitThread(futureTaskMEM);
-			        FutureTaskList.add(futureTaskMEM);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 1);
 					break;
 				case 2:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskIO = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 2);
-			        FutureTask<CompareResultInstance> futureTaskIO = new FutureTask<CompareResultInstance>(taskIO);
-			        ThreadPool.submitThread(futureTaskIO);
-			        FutureTaskList.add(futureTaskIO);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 2);
 					break;
 				case 3:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskSQL = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 3);
-			        FutureTask<CompareResultInstance> futureTaskSQL = new FutureTask<CompareResultInstance>(taskSQL);
-			        ThreadPool.submitThread(futureTaskSQL);
-			        FutureTaskList.add(futureTaskSQL);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 3);
 					break;
 				case 4:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskPing = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 4);
-			        FutureTask<CompareResultInstance> futureTaskPing = new FutureTask<CompareResultInstance>(taskPing);
-			        ThreadPool.submitThread(futureTaskPing);
-			        FutureTaskList.add(futureTaskPing);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 4);
 					break;
 				default:
 				}
+				FutureTask<CompareResultInstance> futureTaskCPU = new FutureTask<CompareResultInstance>(task);
+		        ThreadPool.submitThread(futureTaskCPU);
+		        FutureTaskList.add(futureTaskCPU);
 			}
 			
 		}
@@ -142,23 +126,58 @@ public class CompareAction extends ActionSupport {
 		}
 		Long end = System.currentTimeMillis();
 		logger.error("获得所有数据的时间："+Long.toString(end-start));
-		compareResultEntity.setCpuCurveList(cpu);
-		compareResultEntity.setMemoryCurveList(mem);
-		compareResultEntity.setFileIoSeqrdCurveList(ioSeqrd);
-		compareResultEntity.setFileIoSeqwrCurveList(ioSeqwr);
-		compareResultEntity.setFileIoRndrdCurveList(ioRndrd);
-		compareResultEntity.setFileIoRndwrCurveList(ioRndwr);
-		compareResultEntity.setOltpTransCurveList(oltptrans);
-		compareResultEntity.setOltpDeadCurveList(oltpdead);
-		compareResultEntity.setOltpRdWtCurveList(oltprdwr);
-		compareResultEntity.setPingBaiduCurveList(pingBaidu);
-		compareResultEntity.setPingSinaCurveList(pingSina);
-		compareResultEntity.setPing163CurveList(ping163);
-		compareResultEntity.setPingSouhuCurveList(pingSouhu);
-		compareResultEntity.setPingQQCurveList(pingQQ);
 		
-		compareResultEntity.SetCurve();
-		cutCompareResultEntityCurveEnd(compareResultEntity);
+		//switch太多地方使用，改为观察者模式
+		ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+		for(CompareResultAbstractEntity a : compareResultList){
+			switch( a.getSubClassName() ){
+			case "CompareResultCpuEntity":
+				a.setCurveList(cpu);
+				break;
+			case "CompareResultFileRndrdEntity":
+				a.setCurveList(ioRndrd);
+				break;
+			case "CompareResultFileRndwrEntity":
+				a.setCurveList(ioRndwr);
+				break;
+			case "CompareResultFileSeqrdEntity":
+				a.setCurveList(ioSeqrd);
+				break;
+			case "CompareResultFileSeqwrEntity":
+				a.setCurveList(ioSeqwr);
+				break;
+			case "CompareResultMemEntity":
+				a.setCurveList(mem);
+				break;
+			case "CompareResultOltpDeadEntity":
+				a.setCurveList(oltpdead);
+				break;
+			case "CompareResultOltpTransEntity":
+				a.setCurveList(oltptrans);
+				break;
+			case "CompareResultOltpRdWtEntity":
+				a.setCurveList(oltprdwr);
+				break;
+			case "CompareResultPing163Entity":
+				a.setCurveList(ping163);
+				break;
+			case "CompareResultPingBaiduEntity":
+				a.setCurveList(pingBaidu);
+				break;
+			case "CompareResultPingQQEntity":
+				a.setCurveList(pingQQ);
+				break;
+			case "CompareResultPingSinaEntity":
+				a.setCurveList(pingSina);
+				break;
+			case "CompareResultPingSouhuEntity":
+				a.setCurveList(pingSouhu);
+				break;
+			}
+		}
+		
+		compareResultEntity.SetCurve();//如果isnull为true,则设定list为空
+		compareResultEntity.cutCurve();//删除掉单张图里面所有曲线的末尾的0
 		Long sumend = System.currentTimeMillis();
 		logger.error("总共花费时间："+Long.toString(sumend-sumstart));	
 		//Test();
@@ -172,63 +191,6 @@ public class CompareAction extends ActionSupport {
 			}
 		}
 		return null;
-	}
-	
-	public void Test(){
-		
-		try{
-			logger.error("-------------------test----------------------");
-			for(int i = 0; i <= compareResultEntity.getCpuCurveList().get(0).getCurve().size(); i++){
-				logger.error("cup时间："+ compareResultEntity.getCpuCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPTIME));
-				if (compareResultEntity.getCpuCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPVALUE) == null){
-					logger.error("cup值："+ "为null");
-				} else {
-					logger.error("cup值："+ compareResultEntity.getCpuCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPVALUE));
-				}
-			}
-			
-			logger.error("mem时间长度："+ compareResultEntity.getMemoryCurveList().size());
-			for(int i = 0; i <= compareResultEntity.getMemoryCurveList().get(0).getCurve().size(); i++){
-				logger.error("mem时间："+ compareResultEntity.getMemoryCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPTIME));
-				if (compareResultEntity.getMemoryCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPVALUE) == null){
-					logger.error("mem值："+ "为null");
-				} else {
-					logger.error("mem值："+ compareResultEntity.getMemoryCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPVALUE));
-				}
-			}
-			
-			logger.error("io时间长度："+ compareResultEntity.getFileIoRndrdCurveList().size());
-			for(int j = 0; j <= compareResultEntity.getFileIoRndrdCurveList().get(0).getCurve().size(); j++){
-				logger.error("io时间："+ compareResultEntity.getFileIoRndrdCurveList().get(0).getCurve().get(j).get(Constants.CURVEINSTANCEMAPTIME));
-				if (compareResultEntity.getFileIoRndrdCurveList().get(0).getCurve().get(j).get(Constants.CURVEINSTANCEMAPVALUE) == null){
-					logger.error("io值："+ "为null");
-				} else {
-					logger.error("io值："+ compareResultEntity.getFileIoRndrdCurveList().get(0).getCurve().get(j).get(Constants.CURVEINSTANCEMAPVALUE));
-				}
-			}
-			
-			for(int k = 0; k <= compareResultEntity.getOltpRdWtCurveList().get(0).getCurve().size(); k++){
-				logger.error("oltp时间："+ compareResultEntity.getOltpRdWtCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPTIME));
-				if (compareResultEntity.getOltpRdWtCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE) == null){
-					logger.error("oltp值："+ "为null");
-				} else {
-					logger.error("oltp值："+ compareResultEntity.getOltpRdWtCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE));
-				}
-			}
-			
-			for(int k = 0; k <= compareResultEntity.getPingBaiduCurveList().get(0).getCurve().size(); k++){
-				logger.error("ping时间："+ compareResultEntity.getPingBaiduCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPTIME));
-				if (compareResultEntity.getPingBaiduCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE) == null){
-					logger.error("ping值："+ "为null");
-				} else {
-					logger.error("ping值："+ compareResultEntity.getPingBaiduCurveList().get(0).getCurve().get(k).get(Constants.CURVEINSTANCEMAPVALUE));
-				}
-			}
-			
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		
 	}
 	
 	/**
@@ -291,54 +253,21 @@ public class CompareAction extends ActionSupport {
 	    }
 	}
 	
-	
-	/**
-	 * @param CompareResultEntity
-	 * @result 删除掉里面所有曲线的末尾的0
-	 * */ 
-	public void cutCompareResultEntityCurveEnd(CompareResultEntity compareResultEntity){
-		cutCurveEnd(compareResultEntity.getCpuCurveList());
-		cutCurveEnd(compareResultEntity.getMemoryCurveList());
-		cutCurveEnd(compareResultEntity.getFileIoRndrdCurveList());
-		cutCurveEnd(compareResultEntity.getFileIoRndwrCurveList());
-		cutCurveEnd(compareResultEntity.getFileIoSeqrdCurveList());
-		cutCurveEnd(compareResultEntity.getFileIoSeqwrCurveList());
-		cutCurveEnd(compareResultEntity.getOltpRdWtCurveList());
-		cutCurveEnd(compareResultEntity.getOltpTransCurveList());
-		cutCurveEnd(compareResultEntity.getOltpDeadCurveList());
-		cutCurveEnd(compareResultEntity.getPingBaiduCurveList());
-		cutCurveEnd(compareResultEntity.getPing163CurveList());
-		cutCurveEnd(compareResultEntity.getPingQQCurveList());
-		cutCurveEnd(compareResultEntity.getPingSinaCurveList());
-		cutCurveEnd(compareResultEntity.getPingSouhuCurveList());
-	}
-	
-	/**
-	 * @param List<CompareResultInstance> list
-	 * @result 删除掉单张图里面所有曲线的末尾的0
-	 * */ 
-	public void cutCurveEnd(List<CompareResultInstance> list){
-		try{
-			if (null == list || list.size() == 0){
-				//logger.error("list 为空");
-				return;
+	public void Test(){
+		
+		ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+		for(CompareResultAbstractEntity a : compareResultList){
+			logger.error("属于哪个部分的数据:"+a.getSubClassName());
+			for(int i = 0; i <= a.getCurveList().get(0).getCurve().size(); i++){
+				logger.error("c时间："+ a.getCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPTIME));
+				if (a.getCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPVALUE) == null){
+					logger.error("值："+ "为null");
+				} else {
+					logger.error("值："+ a.getCurveList().get(0).getCurve().get(i).get(Constants.CURVEINSTANCEMAPVALUE));
+				}
 			}
-			//logger.error("不为空");
-			for (int i = 0; i < list.size(); i++ ){
-				List<Map<String,String>> curve = list.get(i).getCurve();
-				Boolean flag = true;
-				Iterator<Map<String,String>> iter = curve.iterator();  
-				while(iter.hasNext()){  
-				    if( null == iter.next().get(Constants.CURVEINSTANCEMAPVALUE) && flag){  
-				        iter.remove();  
-				    }  else{
-				    	flag = false;
-				    }
-				}  
-			}
-		} catch(Exception e){
-			e.printStackTrace();
 		}
+		
 	}
 	
 	public String getSelectstarttime() {

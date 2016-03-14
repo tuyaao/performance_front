@@ -22,6 +22,7 @@ import jxl.write.WriteException;
 
 import org.apache.log4j.Logger;
 
+import com.appcloud.vm.action.entity.CompareResultAbstractEntity;
 import com.appcloud.vm.action.entity.CompareResultEntity;
 import com.appcloud.vm.action.entity.VM48InforEntity;
 import com.appcloud.vm.common.CompareResultInstance;
@@ -59,17 +60,19 @@ public class ExportExcelAction extends ActionSupport {
 	private List<CompareResultInstance> oltptrans = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltpdead = new ArrayList<CompareResultInstance>();
 	private List<CompareResultInstance> oltprdwr = new ArrayList<CompareResultInstance>();
-	private List<CompareResultInstance> ping = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingBaidu = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> ping163 = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingQQ = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingSina = new ArrayList<CompareResultInstance>();
+	private List<CompareResultInstance> pingSouhu = new ArrayList<CompareResultInstance>();
 	
 	private ArrayList<VM48InforEntity> VM48InforList = InitializeListener.getVM48InforList();
-	private CompareResultInstanceFactory compareResultInstanceFactory = new CompareResultInstanceFactory(compareResultEntity);
 	
 	InputStream excelStream ;
-	//private ByteArrayOutputStream out = new ByteArrayOutputStream();
 	private String fileName;
 	
 	private WritableWorkbook workbook;
-    private String[][] title = {{"Host","Time","TotalTime"},{"Host","Time","TransferSpeed"},{"Host","Time","SEQRD","SEQWR","RNDRD","RNDWR"},{"Host","Time","TransactionFrq"},{"Host","Time","Ping"}};
+    private String[][] title = {{"Host","Time","TotalTime"},{"Host","Time","TransferSpeed"},{"Host","Time","SEQRD","SEQWR","RNDRD","RNDWR"},{"Host","Time","TransactionFrq"},{"Host","Time","PingBaidu"},{"Host","Time","Ping163"},{"Host","Time","PingQQ"},{"Host","Time","PingSina"},{"Host","Time","PingSouhu"}};
 	private Integer sheetNumber = 0;
 	
 //	private static int[] a = {30, 28, 37, 36, 38, 35, 31, 32, 33, 34};
@@ -115,60 +118,83 @@ public class ExportExcelAction extends ActionSupport {
 			
 			// 填充多个虚拟机的时间-值
 			for (String indicatorSelect : indicatorSelectArray) {
+				// 填充一台虚拟机的时间-值
+				GetCurveForEachVmTask task = null;
 				switch (Integer.valueOf(indicatorSelect)) {
 				case 0:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskCPU = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 0);
-			        FutureTask<CompareResultInstance> futureTaskCPU = new FutureTask<CompareResultInstance>(taskCPU);
-			        ThreadPool.submitThread(futureTaskCPU);
-			        FutureTaskList.add(futureTaskCPU);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 0);
 					break;
 				case 1:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskMEM = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 1);
-			        FutureTask<CompareResultInstance> futureTaskMEM = new FutureTask<CompareResultInstance>(taskMEM);
-			        ThreadPool.submitThread(futureTaskMEM);
-			        FutureTaskList.add(futureTaskMEM);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 1);
 					break;
 				case 2:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskIO = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 2);
-			        FutureTask<CompareResultInstance> futureTaskIO = new FutureTask<CompareResultInstance>(taskIO);
-			        ThreadPool.submitThread(futureTaskIO);
-			        FutureTaskList.add(futureTaskIO);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 2);
 					break;
 				case 3:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskSQL = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 3);
-			        FutureTask<CompareResultInstance> futureTaskSQL = new FutureTask<CompareResultInstance>(taskSQL);
-			        ThreadPool.submitThread(futureTaskSQL);
-			        FutureTaskList.add(futureTaskSQL);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 3);
 					break;
 				case 4:
-					// 填充一台虚拟机的时间-值
-					GetCurveForEachVmTask taskPING = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 3);
-			        FutureTask<CompareResultInstance> futureTaskPING = new FutureTask<CompareResultInstance>(taskPING);
-			        ThreadPool.submitThread(futureTaskPING);
-			        FutureTaskList.add(futureTaskPING);
+					task = new GetCurveForEachVmTask(Integer.valueOf(instanceSelectArray[i]), getCompanyIdByInstanceId(Integer.valueOf(instanceSelectArray[i])), tsSelectTimeStart, tsSelectTimeEnd, 4);
 					break;
 				default:
 				}
+				FutureTask<CompareResultInstance> futureTaskCPU = new FutureTask<CompareResultInstance>(task);
+		        ThreadPool.submitThread(futureTaskCPU);
+		        FutureTaskList.add(futureTaskCPU);
 			}
 			
 		}
 		for (FutureTask<CompareResultInstance> futureTask : FutureTaskList ){
 			futureTask.get();
 		}
-		compareResultEntity.setCpuCurveList(cpu);
-		compareResultEntity.setMemoryCurveList(mem);
-		compareResultEntity.setFileIoSeqrdCurveList(ioSeqrd);
-		compareResultEntity.setFileIoSeqwrCurveList(ioSeqwr);
-		compareResultEntity.setFileIoRndrdCurveList(ioRndrd);
-		compareResultEntity.setFileIoRndwrCurveList(ioRndwr);
-		compareResultEntity.setOltpTransCurveList(oltptrans);
-		compareResultEntity.setOltpDeadCurveList(oltpdead);
-		compareResultEntity.setOltpRdWtCurveList(oltprdwr);
-		compareResultEntity.setOltpRdWtCurveList(ping);
+		
+		ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+		for(CompareResultAbstractEntity a : compareResultList){
+			switch( a.getSubClassName() ){
+			case "CompareResultCpuEntity":
+				a.setCurveList(cpu);
+				break;
+			case "CompareResultFileRndrdEntity":
+				a.setCurveList(ioRndrd);
+				break;
+			case "CompareResultFileRndwrEntity":
+				a.setCurveList(ioRndwr);
+				break;
+			case "CompareResultFileSeqrdEntity":
+				a.setCurveList(ioSeqrd);
+				break;
+			case "CompareResultFileSeqwrEntity":
+				a.setCurveList(ioSeqwr);
+				break;
+			case "CompareResultMemEntity":
+				a.setCurveList(mem);
+				break;
+			case "CompareResultOltpDeadEntity":
+				a.setCurveList(oltpdead);
+				break;
+			case "CompareResultOltpTransEntity":
+				a.setCurveList(oltptrans);
+				break;
+			case "CompareResultOltpRdWtEntity":
+				a.setCurveList(oltprdwr);
+				break;
+			case "CompareResultPing163Entity":
+				a.setCurveList(ping163);
+				break;
+			case "CompareResultPingBaiduEntity":
+				a.setCurveList(pingBaidu);
+				break;
+			case "CompareResultPingQQEntity":
+				a.setCurveList(pingQQ);
+				break;
+			case "CompareResultPingSinaEntity":
+				a.setCurveList(pingSina);
+				break;
+			case "CompareResultPingSouhuEntity":
+				a.setCurveList(pingSouhu);
+				break;
+			}
+		}
 		
 		compareResultEntity.SetCurve();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -195,7 +221,12 @@ public class ExportExcelAction extends ActionSupport {
 				nameList = new ArrayList<String>();
 				timeList = new ArrayList<String>();
 				valueList1 = new ArrayList<String>();
-				List<CompareResultInstance> cpuCurveList = compareResultEntity.getCpuCurveList();//所有的曲线
+				List<CompareResultInstance> cpuCurveList = null;
+				for(CompareResultAbstractEntity a : compareResultEntity.getResultEntitylist()){
+					if(a.getSubClassName().equals("CompareResultCpuEntity")){
+						cpuCurveList = a.getCurveList(); 
+					}
+				}
 				for (int i = 0; null!= cpuCurveList && i < cpuCurveList.size(); i++){ //单条曲线
 					List<Map<String,String>> curve = cpuCurveList.get(i).getCurve();//每一条曲线
 					String InstanceName = getNameById(cpuCurveList.get(i).getCompanyId(), cpuCurveList.get(i).getInstanceId());
@@ -220,7 +251,12 @@ public class ExportExcelAction extends ActionSupport {
 		    	nameList = new ArrayList<String>();
 				timeList = new ArrayList<String>();
 				valueList1 = new ArrayList<String>();
-				List<CompareResultInstance> memCurveList = compareResultEntity.getMemoryCurveList();//所有的曲线
+				List<CompareResultInstance> memCurveList = null;
+				for(CompareResultAbstractEntity a : compareResultEntity.getResultEntitylist()){
+					if(a.getSubClassName().equals("CompareResultMemEntity")){
+						memCurveList = a.getCurveList(); 
+					}
+				}
 				for (int i = 0; null != memCurveList && i < memCurveList.size(); i++){ //单条曲线
 					List<Map<String,String>> curve = memCurveList.get(i).getCurve();
 					String InstanceName = getNameById(memCurveList.get(i).getCompanyId(), memCurveList.get(i).getInstanceId());
@@ -247,10 +283,26 @@ public class ExportExcelAction extends ActionSupport {
 				valueList2 = new ArrayList<String>();
 				valueList3 = new ArrayList<String>();
 				valueList4 = new ArrayList<String>();
-		    	List<CompareResultInstance> ioSeqrdCurveList = compareResultEntity.getFileIoSeqrdCurveList();//所有的曲线
-		    	List<CompareResultInstance> ioSeqwrCurveList = compareResultEntity.getFileIoSeqwrCurveList();//所有的曲线
-		    	List<CompareResultInstance> ioRndrdCurveList = compareResultEntity.getFileIoRndrdCurveList();//所有的曲线
-		    	List<CompareResultInstance> ioRndwrCurveList = compareResultEntity.getFileIoRndwrCurveList();//所有的曲线
+				List<CompareResultInstance> ioSeqrdCurveList = null;
+		    	List<CompareResultInstance> ioSeqwrCurveList = null;
+		    	List<CompareResultInstance> ioRndrdCurveList = null;
+		    	List<CompareResultInstance> ioRndwrCurveList = null;
+				for(CompareResultAbstractEntity a : compareResultEntity.getResultEntitylist()){
+					switch(a.getSubClassName()){
+					case "CompareResultFileRndrdEntity":
+						ioRndrdCurveList = a.getCurveList(); 
+						break;
+					case "CompareResultFileRndwrEntity":
+						ioRndwrCurveList = a.getCurveList(); 
+						break;
+					case "CompareResultFileSeqrdEntity":
+						ioSeqrdCurveList = a.getCurveList(); 
+						break;
+					case "CompareResultFileSeqwrEntity":
+						ioSeqwrCurveList = a.getCurveList(); 
+						break;
+					}
+				}
 		    	try {
 					getSheetColForIo(ioSeqrdCurveList, ioSeqwrCurveList, ioRndrdCurveList, ioRndwrCurveList, nameList, timeList, valueList1, valueList2, valueList3, valueList4);
 				} catch (Exception e) {
@@ -272,9 +324,22 @@ public class ExportExcelAction extends ActionSupport {
 				valueList2 = new ArrayList<String>();
 				valueList3 = new ArrayList<String>();
 		    	//目前的数据other不全，所以没有弄，要是想要有，compare必须封装完整数据
-		    	List<CompareResultInstance> oltpTransCurveList = compareResultEntity.getOltpTransCurveList();//所有的曲线
-		    	List<CompareResultInstance> oltpDeadCurveList = compareResultEntity.getOltpDeadCurveList();//所有的曲线
-		    	List<CompareResultInstance> oltpRdWtCurveList = compareResultEntity.getOltpRdWtCurveList();//所有的曲线
+		    	List<CompareResultInstance> oltpTransCurveList = null;
+		    	List<CompareResultInstance> oltpDeadCurveList = null;
+		    	List<CompareResultInstance> oltpRdWtCurveList = null;
+		    	for(CompareResultAbstractEntity a : compareResultEntity.getResultEntitylist()){
+					switch(a.getSubClassName()){
+					case "CompareResultOltpDeadEntity ":
+						oltpDeadCurveList = a.getCurveList(); 
+						break;
+					case "CompareResultOltpTransEntity ":
+						oltpTransCurveList = a.getCurveList(); 
+						break;
+					case "CompareResultOltpRdWtEntity ":
+						oltpRdWtCurveList = a.getCurveList(); 
+						break;
+					}
+				}
 		    	try {
 					getSheetColForMySql(oltpTransCurveList, oltpDeadCurveList, oltpRdWtCurveList, nameList, timeList, valueList1, valueList2, valueList3);
 				} catch (Exception e) {
@@ -292,26 +357,63 @@ public class ExportExcelAction extends ActionSupport {
 		    	nameList = new ArrayList<String>();
 				timeList = new ArrayList<String>();
 				valueList1 = new ArrayList<String>();
-				List<CompareResultInstance> pingCurveList = compareResultEntity.getPingBaiduCurveList();//所有的曲线
-				for (int i = 0; null!= pingCurveList && i < pingCurveList.size(); i++){ //单条曲线
-					List<Map<String,String>> curve = pingCurveList.get(i).getCurve();//每一条曲线
-					String InstanceName = getNameById(pingCurveList.get(i).getCompanyId(), pingCurveList.get(i).getInstanceId());
-					for (int j = 0; j < curve.size(); j++){
-						timeList.add(curve.get(j).get(Constants.CURVEINSTANCEMAPTIME));
-						valueList1.add(null == curve.get(j).get(Constants.CURVEINSTANCEMAPVALUE)? "NA":curve.get(j).get(Constants.CURVEINSTANCEMAPVALUE));
-						//这个我不能理解为什么null 无法改为"暂无数据"
-						//valueList1.add(curve.get(j).get(Constants.CURVEINSTANCEMAPVALUE));
-						try {
-							nameList.add(InstanceName);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+				List<CompareResultInstance> Ping163CurveList = null;
+				List<CompareResultInstance> PingBaiduCurveList = null;
+				List<CompareResultInstance> PingQQCurveList = null;
+				List<CompareResultInstance> PingSinaCurveList = null;
+				List<CompareResultInstance> PingSouhuCurveList = null;
+
+				for(CompareResultAbstractEntity a : compareResultEntity.getResultEntitylist()){
+					logger.error(a.getSubClassName());
+					switch(a.getSubClassName()){
+					case "CompareResultPingBaiduEntity":
+						PingBaiduCurveList = a.getCurveList(); 
+						logger.error(PingBaiduCurveList.size());
+						getSheetColForPing(PingBaiduCurveList, nameList, timeList, valueList1);
+						name = (String[])nameList.toArray(new String[nameList.size()]);
+						time = (String[])timeList.toArray(new String[timeList.size()]);
+						value1 = (String[])valueList1.toArray(new String[valueList1.size()]);
+						addSheetInWorkBook(workbook, sheetNumber++, "PingBaidu", title[4], name, time, value1 );
+						break;
+					case "CompareResultPing163Entity":
+						Ping163CurveList = a.getCurveList(); 
+						logger.error(Ping163CurveList.size());
+						getSheetColForPing(Ping163CurveList, nameList, timeList, valueList1);
+						name = (String[])nameList.toArray(new String[nameList.size()]);
+						time = (String[])timeList.toArray(new String[timeList.size()]);
+						value1 = (String[])valueList1.toArray(new String[valueList1.size()]);
+						addSheetInWorkBook(workbook, sheetNumber++, "Ping163", title[5], name, time, value1 );
+						break;
+					case "CompareResultPingQQEntity":
+						PingQQCurveList = a.getCurveList(); 
+						logger.error(PingQQCurveList.size());
+						getSheetColForPing(PingQQCurveList, nameList, timeList, valueList1);
+						name = (String[])nameList.toArray(new String[nameList.size()]);
+						time = (String[])timeList.toArray(new String[timeList.size()]);
+						value1 = (String[])valueList1.toArray(new String[valueList1.size()]);
+						addSheetInWorkBook(workbook, sheetNumber++, "PingQQ", title[6], name, time, value1 );
+						break;
+					case "CompareResultPingSinaEntity":
+						PingSinaCurveList = a.getCurveList(); 
+						logger.error(PingSinaCurveList.size());
+						getSheetColForPing(PingSinaCurveList, nameList, timeList, valueList1);
+						name = (String[])nameList.toArray(new String[nameList.size()]);
+						time = (String[])timeList.toArray(new String[timeList.size()]);
+						value1 = (String[])valueList1.toArray(new String[valueList1.size()]);
+						addSheetInWorkBook(workbook, sheetNumber++, "PingSina", title[7], name, time, value1 );
+						break;
+					case "CompareResultPingSouhuEntity":
+						PingSouhuCurveList = a.getCurveList(); 
+						logger.error(PingSouhuCurveList.size());
+						getSheetColForPing(PingSouhuCurveList, nameList, timeList, valueList1);
+						name = (String[])nameList.toArray(new String[nameList.size()]);
+						time = (String[])timeList.toArray(new String[timeList.size()]);
+						value1 = (String[])valueList1.toArray(new String[valueList1.size()]);
+						addSheetInWorkBook(workbook, sheetNumber++, "PingSouhu", title[8], name, time, value1 );
+						break;
 					}
 				}
-				name = (String[])nameList.toArray(new String[nameList.size()]);
-				time = (String[])timeList.toArray(new String[timeList.size()]);
-				value1 = (String[])valueList1.toArray(new String[valueList1.size()]);
-				addSheetInWorkBook(workbook, sheetNumber++, "Ping", title[4], name, time, value1 );
+				
 				break;
 		    default:
 			}
@@ -356,6 +458,26 @@ public class ExportExcelAction extends ActionSupport {
 		}
 	}
 	
+	//这个和其他测试的区别是,其他的各个测试指标由于是一条记录返回的,时间一定是一致的，所以可以一个处理；但是ping每个数据是单独返回的，故要单独处理
+	/**@param ping的CurveList:一个
+	 * @return 输入sheet里面的数据：每列一个List 
+	 * @throws Exception */
+	private void  getSheetColForPing (List<CompareResultInstance> PingCurveList, 
+			List<String> nameList, List<String> timeList, List<String> valueList1) throws Exception{
+		nameList.clear();
+		timeList.clear();
+		valueList1.clear();
+		for (int i = 0; null != PingCurveList && i < PingCurveList.size(); i++){ //单条曲线,曲线条数相等，可用一条曲线的数量代替
+			List<Map<String,String>> pingcurve = PingCurveList.get(i).getCurve();
+			String InstanceName = getNameById(PingCurveList.get(i).getCompanyId(), PingCurveList.get(i).getInstanceId());
+			for (int j = 0; j<pingcurve.size(); j++){
+				nameList.add(InstanceName);
+				timeList.add(pingcurve.get(j).get(Constants.CURVEINSTANCEMAPTIME));
+				valueList1.add(null == pingcurve.get(j).get(Constants.CURVEINSTANCEMAPVALUE)? "暂无数据" : pingcurve.get(j).get(Constants.CURVEINSTANCEMAPVALUE));
+			}
+		}
+		logger.error("valueList1点数： " + valueList1.size());
+	}
 			
 	/**@param 文件io的CurveList:一共四个
 	 * @return 输入sheet里面的数据：每列一个List 
@@ -484,7 +606,12 @@ public class ExportExcelAction extends ActionSupport {
 				oltprdwr.add(compareResultOltpList.get(2));
 				break;
 			case 4:
-				ping.add(compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd).get(0));
+				List<CompareResultInstance> compareResultPingList =  compareResultInstanceFactory.getCompareResultPing(id, comId, tsSelectTimeStart, tsSelectTimeEnd);
+				pingBaidu.add(compareResultPingList.get(0));
+				ping163.add(compareResultPingList.get(1));
+				pingQQ.add(compareResultPingList.get(2));
+				pingSina.add(compareResultPingList.get(3));
+				pingSouhu.add(compareResultPingList.get(4));
 				break;
 			default:
 			}
@@ -506,15 +633,6 @@ public class ExportExcelAction extends ActionSupport {
 			}
 		}
 		return list;
-	}
-	
-	public void testCompareResultEntity(CompareResultEntity compareResultEntity){
-		//尝试输出cpu曲线内容第一条
-		logger.error("获取size: "+compareResultEntity.getCpuCurveList().size());
-		List<Map<String, String>> curve = compareResultEntity.getCpuCurveList().get(0).getCurve();
-		for (Map<String, String> map: curve){
-			logger.error("时间：" + map.get(Constants.CURVEINSTANCEMAPTIME) + "; 值：" + map.get(Constants.CURVEINSTANCEMAPVALUE));
-		}
 	}
 	
 	public String getInstanceselecttxt() {

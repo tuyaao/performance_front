@@ -26,10 +26,6 @@ public class ToCompareAction extends ActionSupport{
 			cloudPlatformIdList.add(cloudPlatformList.get(i).getId().toString());
 		}
 		
-//		for(int i = 0; i < cloudPlatformNameList.size();i++){
-//			logger.error("公司名称"+cloudPlatformNameList.get(i));
-//			logger.error("公司id"+cloudPlatformIdList.get(i));
-//		}
 		return SUCCESS;
 	}
 

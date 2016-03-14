@@ -25,8 +25,8 @@
 					<li class="${param.act == 'more' ? 'front-active' : ''}">
 						<a href="javascript:void(0)" id="nav-more" class="dropdown-toggle" aria-haspopup="true" role="button" aria-expanded="false">更多<span class="caret"></span></a>
 						<ul class="dropdown-menu front-no-border" role="menu" aria-labelledby="new" aria-expanded="false">
-							<li style="text-align: center"><a href="http://account.free4lab.com/users/users/userinfo" target="_blank">
-								<img style="margin-top: 5px" src="http://account.free4lab.com/users/users/download?uuid=<s:property value='#session.useravatar'/>" onerror="javascript:this.src='images/user.png'" class="center-block img-circle img-avatar-50"> </a><span class="center-block">${session.username}</span>
+							<li style="text-align: center"><a href="http://account.free4inno.com/users/users/userinfo" target="_blank">
+								<img style="margin-top: 5px" src="http://account.free4inno.com/users/users/download?uuid=<s:property value='#session.useravatar'/>" onerror="javascript:this.src='images/user.png'" class="center-block img-circle img-avatar-50"> </a><span class="center-block">${session.username}</span>
 									<span class="center-block"><small>${session.email}</small></span></li>
 							<li class="divider"></li>
 							<li style="text-align: center"><a href="javascript:void(0)" onclick="logout(event)">退出</a></li>			

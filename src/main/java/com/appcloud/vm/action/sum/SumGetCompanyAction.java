@@ -21,7 +21,6 @@ public class SumGetCompanyAction extends ActionSupport{
 		System.out.println("进入查询所有公司相关的数据的ACTION");	
 		
 		Collections.sort(cloudPlatformEntityList, new SortByName());
-		System.out.println("进入查询所有公司相关的数据的ACTION+有几家公司？"+cloudPlatformEntityList.size());	
 		
 		return SUCCESS;
 	}

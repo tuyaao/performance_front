@@ -13,6 +13,10 @@ public class VM48InforEntity {
 	public VM48InforEntity(){
 		
 	}
+	
+	public String toString(){
+		return "id:" + id + "platformId" + platformId + "platformName" + platformName;
+	}
 
 	public Integer getPlatformId() {
 		return platformId;

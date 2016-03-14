@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.appcloud.vm.action.entity.CompareResultAbstractEntity;
 import com.appcloud.vm.action.entity.CompareResultEntity;
 import com.appcloud.vm.utils.StringUtil;
 import com.appcloud.vm.utils.TimeIntervalUtil;
@@ -19,11 +20,7 @@ import com.free4lab.monitorproxy.hbasetemp.BeanIozone;
 import com.free4lab.monitorproxy.hbasetemp.BeanMem;
 import com.free4lab.monitorproxy.hbasetemp.BeanPing;
 import com.free4lab.monitorproxy.hbasetemp.BeanTpcc;
-import com.free4lab.monitorproxy.restclient.CpuClient;
-import com.free4lab.monitorproxy.restclient.IozoneClient;
-import com.free4lab.monitorproxy.restclient.MemClient;
-import com.free4lab.monitorproxy.restclient.PingClient;
-import com.free4lab.monitorproxy.restclient.TpccClient;
+import com.free4lab.monitorproxy.restclient.ClientOperFactory;
 
 /**
  * @param 需要查询的虚拟机ID
@@ -36,11 +33,6 @@ public class CompareResultInstanceFactory {
 	private StringUtil stringUtil = new StringUtil();
 	private Logger logger = Logger
 			.getLogger(CompareResultInstanceFactory.class);
-	private CpuClient cpuClient = new CpuClient();
-	private MemClient memClient = new MemClient();
-	private IozoneClient iozoneClient = new IozoneClient();
-	private TpccClient tpccClient = new TpccClient();
-	private PingClient pingClient = new PingClient();
 	
 	public CompareResultInstanceFactory(){
 	}
@@ -58,9 +50,14 @@ public class CompareResultInstanceFactory {
 		LinkedHashMap<Calendar, Float> cpuTestMap = new LinkedHashMap<Calendar, Float>();
 //    	Long start = System.currentTimeMillis();
 //		logger.error("do here cpu");
-		List<BeanCpu> cpuTestVm = cpuClient.findCpuByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanCpu> cpuTestVm = (List<BeanCpu>)ClientOperFactory.findByIdTime(BeanCpu.class, id+"", tsSelectTimeStart, tsSelectTimeEnd);
 		if (cpuTestVm.size() > 0){
-			compareResultEntity.setCpuCurveListAllNull(false);
+			ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+			for(CompareResultAbstractEntity a : compareResultList){
+				if( a.getSubClassName().equals("CompareResultCpuEntity")){
+					a.setCurveListAllNull(false);
+				}
+			}
 		}
 //		logger.error("每一次获取cpu的个数"+cpuTestVm.size());
 		for (int k = 0; k < cpuTestVm.size(); k++) {
@@ -87,10 +84,15 @@ public class CompareResultInstanceFactory {
 		LinkedHashMap<Calendar, Float> memTestMap = new LinkedHashMap<Calendar, Float>();
 //		Long start = System.currentTimeMillis();
 //		logger.error("do here mem");
-		List<BeanMem> memTestVm = memClient.findMemByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanMem> memTestVm = (List<BeanMem>)ClientOperFactory.findByIdTime(BeanMem.class, id+"", tsSelectTimeStart, tsSelectTimeEnd);
 //		logger.error("每一次获取mem的个数"+memTestVm.size());
 		if (memTestVm.size() > 0){
-			compareResultEntity.setMemoryCurveListAllNull(false);
+			ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+			for(CompareResultAbstractEntity a : compareResultList){
+				if( a.getSubClassName().equals("CompareResultMemEntity")){
+					a.setCurveListAllNull(false);
+				}
+			}
 		}
 		for (int k = 0; k < memTestVm.size(); k++) {
 			BeanMem obj = memTestVm.get(k);
@@ -130,15 +132,17 @@ public class CompareResultInstanceFactory {
 		LinkedHashMap<Calendar, Float> ioRndwrTestMap = new LinkedHashMap<Calendar, Float>();
 //    	Long start = System.currentTimeMillis();
 		try {
-			List<BeanIozone> ioTestVm = iozoneClient.findIoByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+			List<BeanIozone> ioTestVm = (List<BeanIozone>)ClientOperFactory.findByIdTime(BeanIozone.class, id+"", tsSelectTimeStart, tsSelectTimeEnd);
 //			Long end = System.currentTimeMillis();
 //	    	logger.error("每一次fileio的获取时间"+Long.toString(end-start));
 //	    	logger.error("每一次获取io的个数"+ioTestVm.size());
 	    	if (ioTestVm.size() > 0){
-				compareResultEntity.setFileIoSeqrdCurveListAllNull(false);
-				compareResultEntity.setFileIoSeqwrCurveListAllNull(false);
-				compareResultEntity.setFileIoRndrdCurveListAllNull(false);
-				compareResultEntity.setFileIoRndwrCurveListAllNull(false);
+	    		ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+				for(CompareResultAbstractEntity a : compareResultList){
+					if( a.getSubClassName().equals("CompareResultFileRndrdEntity") || a.getSubClassName().equals("CompareResultFileRndwrEntity") || a.getSubClassName().equals("CompareResultFileSeqrdEntity") || a.getSubClassName().equals("CompareResultFileSeqwrEntity") ){
+						a.setCurveListAllNull(false);
+					}
+				}
 			}
 			for (int k = 0; k < ioTestVm.size(); k++) {
 				BeanIozone obj = ioTestVm.get(k);
@@ -203,7 +207,7 @@ public class CompareResultInstanceFactory {
 		LinkedHashMap<Calendar, Float> oltpotherTestMap = new LinkedHashMap<Calendar, Float>();
 //		Long start = System.currentTimeMillis();
 		
-		List<BeanTpcc> oltpTestVm = tpccClient.findTpccByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanTpcc> oltpTestVm = (List<BeanTpcc>)ClientOperFactory.findByIdTime(BeanTpcc.class, id+"", tsSelectTimeStart, tsSelectTimeEnd);
 //		logger.error("每一次获取oltp的个数"+oltpTestVm.size());
 		for (int k = 0; k < oltpTestVm.size(); k++) {
 			BeanTpcc obj = oltpTestVm.get(k);
@@ -219,9 +223,12 @@ public class CompareResultInstanceFactory {
 //		Long end = System.currentTimeMillis();
 //    	logger.error("每一次oltp的获取时间"+Long.toString(end-start));
 		if (oltpTestVm.size() > 0){
-			compareResultEntity.setOltpTransCurveListAllNull(false);
-			compareResultEntity.setOltpDeadCurveListAllNull(false);
-			compareResultEntity.setOltpRdWtCurveListAllNull(false);
+			ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+			for(CompareResultAbstractEntity a : compareResultList){
+				if( a.getSubClassName().equals("CompareResultOltpDeadEntity") || a.getSubClassName().equals("CompareResultOltpTransEntity") || a.getSubClassName().equals("CompareResultOltpRdWtEntity") ){
+					a.setCurveListAllNull(false);
+				}
+			}
 		}
 //		logger.error("do here oltp");
 		oltpTransTestInstance.setCurve(insertTestResultGeneral(oltptransTestMap,
@@ -274,7 +281,7 @@ public class CompareResultInstanceFactory {
 		
 		Long start = System.currentTimeMillis();
 //		logger.error("do here ping");
-		List<BeanPing> pingTestVm = pingClient.findPingByIdTime(id+"", tsSelectTimeStart, tsSelectTimeEnd);
+		List<BeanPing> pingTestVm = (List<BeanPing>)ClientOperFactory.findByIdTime(BeanPing.class, id+"", tsSelectTimeStart, tsSelectTimeEnd);
 
 //		logger.error("每一次获取ping的大概个数"+pingTestVm.size()/5);
 		for (int k = 0; k < pingTestVm.size(); k++) {
@@ -303,11 +310,12 @@ public class CompareResultInstanceFactory {
 		}
 		
 		if (pingBaiduTestMap.size() > 0){
-		compareResultEntity.setPingBaiduCurveListAllNull(false);
-		compareResultEntity.setPing163CurveListAllNull(false);
-		compareResultEntity.setPingQQCurveListAllNull(false);
-		compareResultEntity.setPingSinaCurveListAllNull(false);
-		compareResultEntity.setPingSouhuCurveListAllNull(false);
+			ArrayList<CompareResultAbstractEntity> compareResultList = compareResultEntity.getResultEntitylist();
+			for(CompareResultAbstractEntity a : compareResultList){
+				if( a.getSubClassName().equals("CompareResultPing163Entity") || a.getSubClassName().equals("CompareResultPingBaiduEntity") || a.getSubClassName().equals("CompareResultPingQQEntity") || a.getSubClassName().equals("CompareResultPingSinaEntity") || a.getSubClassName().equals("CompareResultPingSouhuEntity") ){
+					a.setCurveListAllNull(false);
+				}
+			}
 	    }
 		
 		PingBaiduTestInstance.setCurve(insertTestResultPing(pingBaiduTestMap,

@@ -6,6 +6,15 @@ var myname = [];
 var dataForExportExcel;
 var dataselect = document.getElementsByName("dataselect");//需要查询的指标
 
+var cpuCurveList = null;
+var memoryCurveList = null;
+var fileIoSeqrdCurveList = null;
+var fileIoSeqwrCurveList = null;
+var fileIoRndrdCurveList = null;
+var fileIoRndwrCurveList = null;
+var oltpTransCurveList = null;
+var oltpDeadCurveList = null;
+var oltpRdWtCurveList = null;
 var rankPing = null;
 var rankPingBaidu = null;
 var rankPing163 = null;
@@ -56,42 +65,88 @@ function compareConfirm(id,name,cpu,ram){
 
     	$.post("compare/companyaction",{ instanceselecttxt: idlist, selectendtime: selectendtime, selectstarttime: selectstarttime,hostselecttxt: dataselectarray},function(data){
     		dataForExportExcel = data.compareResultEntity;
-    		console.info(data.compareResultEntity.cpuCurveList);
-    		if(dataselect[0].checked && data.compareResultEntity.cpuCurveList != null){
+    		for( var j = 0 ; j < data.compareResultEntity.resultEntitylist.length ; j++){
+    			switch( data.compareResultEntity.resultEntitylist[j].subClassName ){
+    			case "CompareResultCpuEntity":
+    				cpuCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultFileRndrdEntity":
+    				fileIoRndrdCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultFileRndwrEntity":
+    				fileIoRndwrCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultFileSeqrdEntity":
+    				fileIoSeqrdCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultFileSeqwrEntity":
+    				fileIoSeqwrCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultMemEntity":
+    				memoryCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultOltpDeadEntity":
+    				oltpDeadCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultOltpTransEntity":
+    				oltpTransCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultOltpRdWtEntity":
+    				oltpRdWtCurveList = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultPing163Entity":
+    				rankPing163 = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultPingBaiduEntity":
+    				rankPing = data.compareResultEntity.resultEntitylist[j];
+    				rankPingBaidu = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultPingQQEntity":
+    				rankPingQQ = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultPingSinaEntity":
+    				rankPingSina = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			case "CompareResultPingSouhuEntity":
+    				rankPingSouhu = data.compareResultEntity.resultEntitylist[j];
+    				break;
+    			}
+    		    }
+    		if(dataselect[0].checked && cpuCurveList != null){
     			$("#cpu").removeClass("hidden");
-    			chartdata("cpuhighcharts", "CPU", data.compareResultEntity.cpuCurveList);
+    			chartdata("cpuhighcharts", "CPU", cpuCurveList);
 //    			$("#cpuhighcharts").prev().removeClass("hidden");
     			
     		}
-    		if(dataselect[1].checked && data.compareResultEntity.memoryCurveList != null){
+    		if(dataselect[1].checked && memoryCurveList != null){
     			$("#memory").removeClass("hidden");
-    			chartdata("memoryhighcharts", "内存", data.compareResultEntity.memoryCurveList);
+    			chartdata("memoryhighcharts", "内存", memoryCurveList);
 //    			$("#memoryhighcharts").prev().removeClass("hidden");
     			
     		}
-    		if(dataselect[2].checked && data.compareResultEntity.fileIoSeqrdCurveList != null){
+    		if(dataselect[2].checked && fileIoSeqrdCurveList != null){
     			$("#ioseqrd").removeClass("hidden");
-    			chartdata("ioseqrdhighcharts", "硬盘-顺序读", data.compareResultEntity.fileIoSeqrdCurveList);
+    			chartdata("ioseqrdhighcharts", "硬盘-顺序读", fileIoSeqrdCurveList);
 //    			$("#ioseqrdhighcharts").prev().removeClass("hidden");
     			$("#ioseqwr").removeClass("hidden");
-    			chartdata("ioseqwrhighcharts", "硬盘-顺序写", data.compareResultEntity.fileIoSeqwrCurveList);
+    			chartdata("ioseqwrhighcharts", "硬盘-顺序写", fileIoSeqwrCurveList);
 //    			$("#ioseqwrhighcharts").prev().removeClass("hidden");
     			$("#iorndrd").removeClass("hidden");
-    			chartdata("iorndrdhighcharts", "硬盘-随机读", data.compareResultEntity.fileIoRndrdCurveList);
+    			chartdata("iorndrdhighcharts", "硬盘-随机读", fileIoRndrdCurveList);
 //    			$("#iorndrdhighcharts").prev().removeClass("hidden");
     			$("#iorndwr").removeClass("hidden");
-    			chartdata("iorndwrhighcharts", "硬盘-随机写", data.compareResultEntity.fileIoRndwrCurveList);
+    			chartdata("iorndwrhighcharts", "硬盘-随机写", fileIoRndwrCurveList);
 //    			$("#iorndwrhighcharts").prev().removeClass("hidden");
     			
     		}
-    		if(dataselect[3].checked && data.compareResultEntity.oltpTransCurveList != null){
+    		if(dataselect[3].checked && oltpTransCurveList != null){
     			$("#oltptrans").removeClass("hidden");
-    			chartdata("oltptranshighcharts", "MySQL—事务", data.compareResultEntity.oltpTransCurveList); 			
+    			chartdata("oltptranshighcharts", "MySQL—事务", oltpTransCurveList); 			
 //    			$("#oltptranshighcharts").prev().removeClass("hidden");
-//    			chartdata("oltpdeadhighcharts", "MySQL—死锁", data.compareResultEntity.oltpDeadCurveList);
+//    			chartdata("oltpdeadhighcharts", "MySQL—死锁", oltpDeadCurveList);
 //    			$("#oltpdeadhighcharts").prev().removeClass("hidden");
 //    			$("#oltprdwr").removeClass("hidden");
-//    			chartdata("oltprdwrhighcharts", "MySQL—读写", data.compareResultEntity.oltpRdWtCurveList);
+//    			chartdata("oltprdwrhighcharts", "MySQL—读写", oltpRdWtCurveList);
 //    			$("#oltprdwrhighcharts").prev().removeClass("hidden");
     		}
     		
@@ -102,14 +157,8 @@ function compareConfirm(id,name,cpu,ram){
 //    			alert("data.compareResultEntity.pingCurveList != null");
 //    		}
     		
-    		if(dataselect[4].checked && data.compareResultEntity.pingBaiduCurveList != null){
+    		if(dataselect[4].checked && rankPing != null){
     			$("#ping").removeClass("hidden");
-    			rankPing = data.compareResultEntity.pingBaiduCurveList;
-				rankPingBaidu = data.compareResultEntity.pingBaiduCurveList;
-				rankPing163 = data.compareResultEntity.ping163CurveList;
-				rankPingSina = data.compareResultEntity.pingSinaCurveList;
-				rankPingQQ = data.compareResultEntity.pingQQCurveList;
-				rankPingSouhu = data.compareResultEntity.pingSouhuCurveList;
     			chartdata("pinghighcharts", "PING", rankPing); 			
     		}
     		$("#loadingcharts").addClass("hidden");
@@ -119,7 +168,7 @@ function compareConfirm(id,name,cpu,ram){
 
 function chartdata(id, name, data){
 	var datatable = [];
-	var cpuCurveList = data;
+	var cpuCurveList = data.curveList;
 	var legendname;//图例名字
 	if(cpuCurveList != null){
 		//$("#datanotice").addClass("hidden"););

@@ -15,8 +15,8 @@
 					<a href="mainjsp/compare.jsp">性能对比</a></li>
 					<li class=""><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">更多<span class="caret"></span></a>
 						<ul class="dropdown-menu front-no-border" role="menu" aria-labelledby="new" aria-expanded="false">
-							<li style="text-align: center"><a href="http://account.free4lab.com/users/users/userinfo" target="_blank">
-								<img style="margin-top: 5px" src="http://account.free4lab.com/users/users/download?uuid=60a1af72-2112-4dad-9b5f-74da6cb52ce6" onerror="javascript:this.src='images/user.png'" class="center-block img-circle img-avatar-50"> </a><span class="center-block">ç¨èª</span>
+							<li style="text-align: center"><a href="http://account.free4inno.com/users/users/userinfo" target="_blank">
+								<img style="margin-top: 5px" src="http://account.free4inno.com/users/users/download?uuid=60a1af72-2112-4dad-9b5f-74da6cb52ce6" onerror="javascript:this.src='images/user.png'" class="center-block img-circle img-avatar-50"> </a><span class="center-block">ç¨èª</span>
 									<span class="center-block"><small>928434237@qq.com</small></span></li>
 							<li class="divider"></li>
 							<li><a href="javascript:void(0)" onclick="logout()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;退出</a></li>

@@ -1,13 +1,12 @@
 package com.appcloud.vm.common;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 //做成单例的
+//关于ThreadPool介绍的不错的：http://blog.csdn.net/wangwenhui11/article/details/6760474
 //1.put和take：当试图向满的队列中体添加，或从空的队列中移出元素时，导致线程阻塞。用于将队列当做线程的管理工具来使用。 
 //2.add，remove和element，当试图向满的队列中体添加，或从空的队列中移出元素时抛出异常。 
 //3.offer，poll和peek，当试图向满的队列中体添加，或从空的队列中移出元素时如果不能完成任务，只是给出一个错误提示（返回null），而不会抛出异常。 
@@ -16,6 +15,11 @@ import java.util.concurrent.TimeUnit;
 //2.ArrayBlockingQueue ：构造时需要指定容量 
 //3.priorityBlockingQueue:是一个带优先级的队列，而不是先进先出队列 
 //4.DelayQueue：包含实现Delayed接口的对象 
+
+//futherTask,futher,runnable,callable,thread联系:
+//http://blog.csdn.net/liulipuo/article/details/39029643
+//http://uule.iteye.com/blog/1539084
+
 
     public class ThreadPool {
 //    	private static ExecutorService  threadPoolExecutorService = null;

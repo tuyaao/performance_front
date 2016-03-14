@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+//这个是返回比较结果的每个图表的每一条曲线的值
 public class CompareResultInstance {
 	
 	private Integer companyId; //公司id

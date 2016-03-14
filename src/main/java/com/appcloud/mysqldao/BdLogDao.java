@@ -1,4 +1,4 @@
-package com.appcloud.vm.action.dao;
+package com.appcloud.mysqldao;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
