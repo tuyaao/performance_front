@@ -6,8 +6,11 @@ import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateSessionFactory {
-	  private  final Configuration configuration;
-      private  final SessionFactory sessionFactory;
+//    报错误，初始化错误，我觉得跟类加载机制有关，有空试一下  ，挺有意思的
+//	  private final Configuration configuration;
+//    private final SessionFactory sessionFactory;
+	  private  static Configuration configuration;
+      private  static SessionFactory sessionFactory;
 
     //SessionFactory是工厂模式
     //工厂模式  也就是它每次会生成一个新的副本对象 而这些副本对象之间没有关系的 也就保证了安全性

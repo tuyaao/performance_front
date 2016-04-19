@@ -690,6 +690,21 @@ ul.lof-navigator li.active,ul.lof-navigator li:hover {
 	background: #fafafa
 }
 
+#containeruptime {
+	box-sizing: border-box;
+	font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;
+	font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+	min-height: 100%;
+	position:absolute;
+    right:0px;
+    padding-right:0px;
+    width:331px;
+	float:right;
+	background: #fafafa
+}
+
 #inner {
 	position: relative;
 	padding-bottom: 50px;

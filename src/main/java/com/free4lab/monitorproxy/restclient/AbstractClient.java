@@ -46,12 +46,13 @@ public abstract class AbstractClient<T> {
 
 	// 这个其实和业务有关，应该再抽象一层
 	protected List<T> findByIdTime(String id, Timestamp start, Timestamp end) {
+		long startTime = System.currentTimeMillis();
 		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
 		params.add("id", id);
 		params.add(BEGIN_TIME, start.getTime() + "");
 		params.add(END_TIME, end.getTime() + "");
-
-		return (List<T>) getList(getByIdTimePath(), params);
+		List<T> result = (List<T>) getList(getByIdTimePath(), params);
+	    return result;
 	}
 
 	// get方法，只根据路径获取返回值，返回值是预设类型

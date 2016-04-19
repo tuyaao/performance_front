@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>  
+<class  name="com.appcloud.vm.action.dbentity.SumWeekIozone" table="iozone_test_result_newweek" catalog="appcloud_performance" >
+
+      <id name="id" column="id" type="int">
+      </id>
+	
+	 <property name="uuid" column="uuid" type="int" />  
+      <property name="companyname" column="companyname" type="java.lang.String" />  
+      <property name="time" column="time" type="java.lang.String" />  
+      <property name="fileSize" column="fileSize" type="int" />  
+      <property name="recordSize" column="recordSize" type="int" /> 
+      <property name="write" column="write" type="int" />  
+      <property name="rewrite" column="rewrite" type="int" />  
+      <property name="read" column="read" type="int" />  
+      <property name="reread" column="reread" type="int" />  
+      <property name="randomRead" column="randomRead" type="int" />  
+      <property name="randomWrite" column="randomWrite" type="int" />  
+      <property name="count" column="count" type="int" />   
+	
+</class>
+</hibernate-mapping> 

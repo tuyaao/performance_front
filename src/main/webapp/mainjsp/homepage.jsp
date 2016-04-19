@@ -16,7 +16,8 @@
 </head>
 <body class="front-body">
 	<s:include value="/template/_bootbanner.jsp?index=home" />
-	<div class="front-inner">
+	<div class="front-inner">	
+	 <span id="time" style="float: right"></span>
 		<div class="container">
 			<s:iterator
 				value="{'cpucharts','memcharts','readcharts','writecharts','trancharts','pingcharts'}"
@@ -31,41 +32,38 @@
 				<div class="panel panel-default front-panel">
 					<div class="panel-heading">
 						<s:if test="#st.count == 1">
-							<h3 class="panel-title" style="font-weight: bold;">云主机性能对比(4核8G) - CPU</h3>
+							<h3 class="panel-title" style="font-weight: bold; margin-top:4px">CPU性能对比(单位: S) <span id="timecpu" style="float: right"></span></h3>
 						</s:if>
 						<s:elseif test="#st.count == 2">
-							<h3 class="panel-title" style="font-weight: bold;">云主机性能对比(4核8G) - 内存</h3>
+							<h3 class="panel-title" style="font-weight: bold; margin-top:4px">内存性能对比(单位: MB/S) <span id="timemem" style="float: right"></span> </h3>
 						</s:elseif>
 						<s:elseif test="#st.count == 3">
-							<h3 class="panel-title" style="font-weight: bold;">云主机性能对比(4核8G) - 硬盘随机读</h3>
+							<h3 class="panel-title" style="font-weight: bold; margin-top:4px">硬盘随机读性能对比(单位: MB/S) <span id="timeread" style="float: right"></span> </h3>
 						</s:elseif>
 						<s:elseif test="#st.count == 4">
-							<h3 class="panel-title" style="font-weight: bold;">云主机性能对比(4核8G) - 硬盘随机写U</h3>
+							<h3 class="panel-title" style="font-weight: bold; margin-top:4px">硬盘随机写性能对比(单位: MB/S) <span id="timewrite" style="float: right"></span></h3>
 						</s:elseif>
 						<s:elseif test="#st.count == 5">
-							<h3 class="panel-title" style="font-weight: bold;">云主机性能对比(4核8G)
-								- MySQL事务</h3>
+							<h3 class="panel-title" style="font-weight: bold; margin-top:4px">MySQL事务性能对比(单位: 事务数/S) <span id="timetran" style="float: right"></span></h3>
 						</s:elseif>
 						<s:elseif test="#st.count == 6">
+						    <div style="margin-top:4px">
 							<select id="pingchartselect" class="panel-title"
 								onchange="changePingChart()"
 								style="font-weight: bold; border: 0; border: none;" name="cars">
 								<option id="optionbaidu" class="panel-title"
-									style="font-weight: bold;" value="baiduPing">云主机性能对比(4核8G)
-									- PINGBaidu</option>
+									style="font-weight: bold;" value="baiduPing">ping性能对比 www.baidu.com(单位: S)</option>
 								<option id="option163" class="panel-title"
-									style="font-weight: bold;" value="163Ping">云主机性能对比(4核8G)
-									- PING163</option>
+									style="font-weight: bold;" value="163Ping">ping性能对比 www.163.com(单位: S)</option>
 								<option id="optionsina" class="panel-title"
-									style="font-weight: bold;" value="sinaPing">云主机性能对比(4核8G)
-									- PINGSina</option>
+									style="font-weight: bold;" value="sinaPing">ping性能对比 www.sina.com.cn(单位: S)</option>
 								<option id="optionqq" class="panel-title"
-									style="font-weight: bold;" value="qqPing">云主机性能对比(4核8G)
-									- PINGQQ</option>
+									style="font-weight: bold;" value="qqPing">ping性能对比 www.qq.com(单位: S)</option>
 								<option id="optionsouhu" class="panel-title"
-									style="font-weight: bold;" value="souhuPing">云主机性能对比(4核8G)
-									- PINGSouhu</option>
+									style="font-weight: bold;" value="souhuPing">ping性能对比 www.sohu.com(单位: S)</option>
 							</select>
+							<h3 class="panel-title" style="font-weight: bold; margin-top:4px; float: right; width:179px" > <span id="timeping" style="float: right"></span></h3>
+							</div>
 						</s:elseif>
 						<span id="time<s:property value='chartsid' />"
 							style="float: right"></span>
@@ -153,7 +151,10 @@
 				</div>
 			</div>
 		</div>
+		
 
+
+<!--
 		<div class="col-md-12 col-xs-12" style="width: 50%">
 			<div class="panel panel-default front-panel">
 				<div class="panel-heading">
@@ -187,7 +188,11 @@
 				</div>
 			</div>
 		</div>
-
+-->
+<div class="col-md-12 col-xs-12" style="text-align: center; margin-top: 20px;"> 
+        <!-- <a href="http://freeabout.free4inno.com/" class="blueletter">自由之翼测评机构</a>  &nbsp&nbsp&nbsp&nbsp&nbsp  <a href="#" class="blueletter">免责声明</a> -->
+        <a href="http://freeabout.free4inno.com/" class="blueletter">自由之翼测评机构</a>
+        </div>
 	</div>
 
 	<script src="http://code.jquery.com/jquery.js"></script>
@@ -206,6 +211,13 @@
 		var rankPingSina = null;
 		var rankPingQQ = null;
 		var rankPingSouhu = null;
+		
+		var rankcpuymax = 0;
+		var rankmemymax = 0;
+		var rankreadymax = 0;
+		var rankwriteymax = 0;
+		var ranktransymax = 0;
+		var rankPingymax = 0;
 
 		$('#per-toggle').click(function() {
 			var $target = $($(this).data('target'))
@@ -311,7 +323,6 @@
 						rankPingSina = data.cloudPlatformPingSinaRankingList;
 						rankPingQQ = data.cloudPlatformPingQQRankingList;
 						rankPingSouhu = data.cloudPlatformPingSouhuRankingList;
-
 						var mydata = [];
 						var transactionx = [];
 						var transactiondata = [];
@@ -333,21 +344,41 @@
 						$("#timeread").html(time);
 						$("#timewrite").html(time);
 						$("#timeping").html(time);
+						
 						for ( var i = 0; i < rankcpu.length; i++) {
 							cpux.push(rankcpu[i].cloudPlatformName);
 							cpudata.push(rankcpu[i].cpu);
+							if( parseInt(rankcpu[i].cpu) > parseInt(rankcpuymax) ) { rankcpuymax = rankcpu[i].cpu }
+							
 							memx.push(rankmem[i].cloudPlatformName);
 							memdata.push(rankmem[i].mem);
+							if( parseInt(rankmem[i].mem) > parseInt(rankmemymax) ) { rankmemymax = rankmem[i].mem }
+							
 							readx.push(rankread[i].cloudPlatformName);
 							readdata.push(rankread[i].rndrd);
+							if( parseInt(rankread[i].rndrd) > parseInt(rankreadymax) ) { rankreadymax = rankread[i].rndrd }
+							
 							writex.push(rankwrite[i].cloudPlatformName);
 							writedata.push(rankwrite[i].rndwr);
+							if( parseInt(rankwrite[i].rndwr) > parseInt(rankwriteymax) ) { rankwriteymax = rankwrite[i].rndwr }
+							
 							transactionx.push(ranktrans[i].cloudPlatformName);
 							transactiondata.push(ranktrans[i].transaction);
+							if( parseInt(ranktrans[i].transaction) > parseInt(ranktransymax) ) { ranktransymax = ranktrans[i].transaction }
+							
 							pingx.push(rankPing[i].cloudPlatformName);
 							pingdata.push(rankPing[i].pingBaidu);
+							if( parseInt(rankPing[i].pingBaidu) > parseInt(rankPingymax) ) { rankPingymax = rankPing[i].pingBaidu }
+							
 						}
-
+						
+						rankcpuymax = Number(rankcpuymax)*1.2;
+						rankmemymax = Number(rankmemymax)*1.2;
+						rankreadymax = Number(rankreadymax)*1.2;
+						rankwriteymax = Number(rankwriteymax)*1.2;
+						ranktransymax = Number(ranktransymax)*1.2;
+						rankPingymax = Number(rankPingymax)*1.2;
+						
 						var datatable = [];
 						var dataline = {
 							name : "事务",
@@ -355,7 +386,7 @@
 						}
 						datatable.push(dataline);
 						drawChart("trancharts", "事务", transactionx, datatable,
-								1, "#058DC7");
+								1, "#058DC7", ranktransymax);
 						$("#loadingtrancharts").addClass("hidden");
 						var datatable = [];
 						dataline = {
@@ -364,7 +395,7 @@
 						}
 						datatable.push(dataline);
 						drawChart("cpucharts", "cpu", cpux, datatable, 1,
-								"#50B432");
+								"#50B432", rankcpuymax);
 						$("#loadingcpucharts").addClass("hidden");
 						var datatable = [];
 						dataline = {
@@ -373,7 +404,7 @@
 						}
 						datatable.push(dataline);
 						drawChart("memcharts", "内存", memx, datatable, 1,
-								"#ED561B");
+								"#ED561B", rankmemymax);
 						$("#loadingmemcharts").addClass("hidden");
 						var datatable = [];
 						dataline = {
@@ -382,7 +413,7 @@
 						}
 						datatable.push(dataline);
 						drawChart("readcharts", "随机读", readx, datatable, 1,
-								"#DDDF00");
+								"#DDDF00", rankreadymax);
 						$("#loadingreadcharts").addClass("hidden");
 						var datatable = [];
 						dataline = {
@@ -391,7 +422,7 @@
 						}
 						datatable.push(dataline);
 						drawChart("writecharts", "随机写", writex, datatable, 1,
-								"#24CBE5");
+								"#24CBE5", rankwriteymax);
 						$("#loadingwritecharts").addClass("hidden");
 						var datatable = [];
 						dataline = {
@@ -400,18 +431,18 @@
 						}
 						datatable.push(dataline);
 						drawChart("pingcharts", "PING", pingx, datatable, 1,
-								"#AA7700");
+								"#AA7700", rankPingymax);
 						$("#loadingpingcharts").addClass("hidden");
 					});
 		})
 
-		function drawChart(id, title, xdata, data, xstep, color) {
+		function drawChart(id, title, xdata, data, xstep, color, ymax) {
 			var hitsChartOptions = configChartOptions(id, title, xdata, data,
-					xstep, color);
+					xstep, color, ymax);
 			var chart = new Highcharts.Chart(hitsChartOptions);
 		}
 
-		function configChartOptions(holderid, title, xdata, datas, xstep, color) {
+		function configChartOptions(holderid, title, xdata, datas, xstep, color, ymax) {
 			var chartOptions = {
 				chart : {
 					renderTo : holderid,
@@ -426,6 +457,11 @@
 						shadow : false
 					//去阴影
 					},
+					series: {
+		                dataLabels: {
+		                    enabled: true,
+		                }
+		            }
 				},
 				legend : {
 					enabled : false,
@@ -445,6 +481,7 @@
 				},
 				yAxis : {
 					min : 0,
+					max : ymax,
 					title : {
 						text : ''
 					}
@@ -455,16 +492,24 @@
 					labels : {
 					//		                step:20,
 					//		                align:'right',
-
 					}
 				},
+//              这段加上在会有数据提示框				
+//				tooltip : {
+//					formatter : function() {
+//						return this.series.name + ' 数据:<b>' + this.point.y
+//								+ '</b><br/>公司:<b>' + xdata[this.point.x]
+//								+ '</b>';
+//					}
+//				},
 				tooltip : {
-					formatter : function() {
-						return this.series.name + ' 数据:<b>' + this.point.y
-								+ '</b><br/>公司:<b>' + xdata[this.point.x]
-								+ '</b>';
-					}
+					enabled: false
 				},
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                },
 				scrollbar : {
 					enabled : true
 				},

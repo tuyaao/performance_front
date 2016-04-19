@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 //1.LinkedBlockingQueue ： 没有上边界 
 //2.ArrayBlockingQueue ：构造时需要指定容量 
 //3.priorityBlockingQueue:是一个带优先级的队列，而不是先进先出队列 
-//4.DelayQueue：包含实现Delayed接口的对象 
+//4.DelayQueue：包含实现Delayed接口的对象
 
 //futherTask,futher,runnable,callable,thread联系:
 //http://blog.csdn.net/liulipuo/article/details/39029643

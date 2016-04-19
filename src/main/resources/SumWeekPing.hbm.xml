@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>  
+<class  name="com.appcloud.vm.action.dbentity.SumWeekPing" table="ping_test_result_newweek" catalog="appcloud_performance" >
+
+      <id name="id" column="id" type="int">
+      </id>
+	
+	 <property name="uuid" column="uuid" type="int" />  
+      <property name="companyname" column="companyname" type="java.lang.String" />  
+      <property name="time" column="time" type="java.lang.String" />  
+       <property name="destIp" column="destIp" type="java.lang.String" />  
+      <property name="loss" column="loss" type="float" />  
+      <property name="avg" column="avg" type="float" />  
+      <property name="count" column="count" type="int" /> 
+      
+</class>
+</hibernate-mapping> 

@@ -2,6 +2,7 @@ package com.appcloud.vm.action.sum;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -38,6 +39,7 @@ import com.opensymphony.xwork2.ActionSupport;
 public class SumGetchatAction extends ActionSupport{
 	
 	private static final long serialVersionUID = 1L;
+	private static Boolean firstin = true;
 	private Logger logger = Logger.getLogger(SumGetchatAction.class);
 	private String testUpToTime = "testUpToTime";//事务数测试表的截至时间的那一周的开始
 	private String testUpToTimeEnd = "testUpToTimeEnd";//事务数测试表的截至时间的那一周的现在
@@ -60,6 +62,33 @@ public class SumGetchatAction extends ActionSupport{
 	
 	public String execute() {	
 		System.out.println("进入综述首页");	
+		if(firstin){//第一次进，从数据库获取，赋值给初始化静态变量，以后直接从这里获取；由于初始化中好像不能调用其他的类
+			firstin = false;
+			execute2();
+			InitializeListener.synchro(lists,testUpToTime,testUpToTimeEnd);
+			return SUCCESS;
+		}
+		lists = InitializeListener.listsstatic;
+		testUpToTime = InitializeListener.testUpToTimestatic;
+		testUpToTimeEnd = InitializeListener.testUpToTimeEndstatic;
+		System.out.println(lists.getCloudPlatformCpuRankingList().get(0).getCpu());	
+		System.out.println(testUpToTime);	
+		System.out.println(testUpToTimeEnd);
+		cloudPlatformCpuRankingList = lists.getCloudPlatformCpuRankingList();
+	    cloudPlatformMemRankingList = lists.getCloudPlatformMemRankingList();
+	    cloudPlatformReadRankingList = lists.getCloudPlatformReadRankingList();
+	    cloudPlatformWriteRankingList = lists.getCloudPlatformWriteRankingList();
+	    cloudPlatformTransRankingList = lists.getCloudPlatformTransRankingList();
+	    cloudPlatformPingBaiduRankingList = lists.getCloudPlatformPingBaiduRankingList();
+	    cloudPlatformPing163RankingList = lists.getCloudPlatformPing163RankingList();
+	    cloudPlatformPingSinaRankingList = lists.getCloudPlatformPingSinaRankingList();
+	    cloudPlatformPingQQRankingList = lists.getCloudPlatformPingQQRankingList();
+	    cloudPlatformPingSouhuRankingList = lists.getCloudPlatformPingSouhuRankingList();
+	    return SUCCESS;
+	}
+	
+	public void execute2() {	
+		//System.out.println("进入综述首页");	
 		start = System.currentTimeMillis();
 		
 		//本来应该是：公司->虚拟机->硬件cpu达2G->所有指标的表->最近的一条记录>取平均值->排名
@@ -85,23 +114,30 @@ public class SumGetchatAction extends ActionSupport{
 	    cloudPlatformPingQQRankingList = lists.getCloudPlatformPingQQRankingList();
 	    cloudPlatformPingSouhuRankingList = lists.getCloudPlatformPingSouhuRankingList();
 		
-		testUpToTime = getRankingListLastTime(lists.getCloudPlatformCpuRankingList());//这里假设其每周都有数据，否则应该+7判断，如果晚于今天，则是今天，否则是+7的日子
+	    Calendar startCal = Calendar.getInstance();
+	    Calendar endCal = Calendar.getInstance();
+	    startCal.add(Calendar.DATE, -7);
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    testUpToTime = sdf.format(startCal.getTime());
+	    testUpToTimeEnd = sdf.format(endCal.getTime());
+	    System.out.println("testUpToTime:"+testUpToTime);
+	    System.out.println("testUpToTimeEnd:"+testUpToTimeEnd);
+	    
+//		testUpToTime = getRankingListLastTime(lists.getCloudPlatformCpuRankingList());//这里假设其每周都有数据，否则应该+7判断，如果晚于今天，则是今天，否则是+7的日子
 //		logger.error(getRankingListLastTime(cloudPlatformCpuRankingList));
 //		logger.error(testUpToTime);
 		
-		Calendar calendarEnd = StringUtil.String2calYMD(testUpToTime);
-		calendarEnd.add(Calendar.DATE, 6);
-		if ( calendarEnd.getTimeInMillis() > Calendar.getInstance().getTimeInMillis()){
-			testUpToTimeEnd = StringUtil.timestamp2String(StringUtil.calendar2Timestamp(Calendar.getInstance()), 0);
-		} else {
-			testUpToTimeEnd = StringUtil.timestamp2String(StringUtil.calendar2Timestamp(calendarEnd), 0);
-		}
+//		Calendar calendarEnd = StringUtil.String2calYMD(testUpToTime);
+//		calendarEnd.add(Calendar.DATE, 6);
+//		if ( calendarEnd.getTimeInMillis() > Calendar.getInstance().getTimeInMillis()){
+//			testUpToTimeEnd = StringUtil.timestamp2String(StringUtil.calendar2Timestamp(Calendar.getInstance()), 0);
+//		} else {
+//			testUpToTimeEnd = StringUtil.timestamp2String(StringUtil.calendar2Timestamp(calendarEnd), 0);
+//		}
+		
 	    end = System.currentTimeMillis();
 	    logger.error("综述首页获取图表花费总时间"+ Long.toString(end-start));
-		return SUCCESS;
 	}
-
-
 
 	/**
 	 * @param ArrayList<CloudPlatformRanking>集合
@@ -137,11 +173,11 @@ public class SumGetchatAction extends ActionSupport{
 		ArrayList<ArrayList<? extends SumRankingAbstractEntity>> fileList =  new ArrayList<ArrayList<? extends SumRankingAbstractEntity>>();
 		ArrayList<ArrayList<? extends SumRankingAbstractEntity>> transList =  new ArrayList<ArrayList<? extends SumRankingAbstractEntity>>();
 		ArrayList<ArrayList<? extends SumRankingAbstractEntity>> pingList =  new ArrayList<ArrayList<? extends SumRankingAbstractEntity>>();
+		rucanLists.add(pingList);//先加先开始，即使是并行的，所以如果速度慢，尽量不要换顺序。
+		rucanLists.add(fileList);
 		rucanLists.add(cpuList);
 		rucanLists.add(memList);
-		rucanLists.add(fileList);
 		rucanLists.add(transList);
-		rucanLists.add(pingList);
 		ArrayList<FutureTask<ArrayList<ArrayList<? extends SumRankingAbstractEntity>>>> FutureTaskList = new ArrayList<FutureTask<ArrayList<ArrayList<? extends SumRankingAbstractEntity>>>>();
 		
 		//归纳futureTask的入参
@@ -168,10 +204,12 @@ public class SumGetchatAction extends ActionSupport{
 	          }
 	       
 	      for(ArrayList<ArrayList<? extends SumRankingAbstractEntity>> it : rucanLists){
-	           GetChatForEachVmTask task = new GetChatForEachVmTask(it);
-		       FutureTask<ArrayList<ArrayList<? extends SumRankingAbstractEntity>>> futureTask = new FutureTask<ArrayList<ArrayList<? extends SumRankingAbstractEntity>>>(task);
-		       ThreadPool.submitThread(futureTask);
-		       FutureTaskList.add(futureTask);
+	    	     for(int i = 0; i < 6; i++){
+	    	       GetChatForEachVmTask task = new GetChatForEachVmTask(it,i);
+	  		       FutureTask<ArrayList<ArrayList<? extends SumRankingAbstractEntity>>> futureTask = new FutureTask<ArrayList<ArrayList<? extends SumRankingAbstractEntity>>>(task);
+	  		       ThreadPool.submitThread(futureTask);
+	  		       FutureTaskList.add(futureTask);
+	    	     }
 	      }
 		
 	      while(true){
@@ -195,8 +233,10 @@ public class SumGetchatAction extends ActionSupport{
 	 * */
 	class GetChatForEachVmTask implements Callable<ArrayList<ArrayList<? extends SumRankingAbstractEntity>>>{
 		public ArrayList<ArrayList<? extends SumRankingAbstractEntity>> lists;
-		public GetChatForEachVmTask( ArrayList<ArrayList<? extends SumRankingAbstractEntity>> lists ) {
+		private int i = 0;
+		public GetChatForEachVmTask( ArrayList<ArrayList<? extends SumRankingAbstractEntity>> lists, int index ) {
 			this.lists  = lists;
+			this.i  = index;
 		}
 		
 	    @Override  //目前就是获得第一周，没有查看开始的时间，然后再结合过去的时间,这个开始时间可能需要设置为每周一0点0分
@@ -216,14 +256,10 @@ public class SumGetchatAction extends ActionSupport{
 	    		switch(list.get(0).getSubClassName()){
 		    	case "SumRankingCpuEntity"://获取cpu数据
 		    		showEnd = "SumRankingCpuEntity";
-		    		System.out.println("开始任务SumRankingCpuEntity:"+System.currentTimeMillis());
-		    		for(int i = 0; i < list.size(); i++){
-		    			SumRankingCpuEntity entity = (SumRankingCpuEntity)list.get(i);
-		    			if(entity == null){
-		    				System.out.println("entity is null");
-		    			}
-		    			List<BeanCpu> cpuTestResultWeek = (List<BeanCpu>)ClientOperFactory.findByIdTime(BeanCpu.class, entity.getId()+"", timeStart, timeEnd);
-		    			entity.setTestTime(timeStart);
+//		    		for(int i = 0; i < list.size(); i++){
+		    			SumRankingCpuEntity cpuEntity = (SumRankingCpuEntity)list.get(i);
+		    			List<BeanCpu> cpuTestResultWeek = (List<BeanCpu>)ClientOperFactory.findByIdTime(BeanCpu.class, cpuEntity.getId()+"", timeStart, timeEnd);
+		    			cpuEntity.setTestTime(timeStart);
 						if(cpuTestResultWeek.size() > 0){
 							for (BeanCpu beanCpu : cpuTestResultWeek){
 								ranking += beanCpu.getTotalTime();
@@ -232,16 +268,17 @@ public class SumGetchatAction extends ActionSupport{
 						}
 //						logger.error("cpuTotalTime:"+ranking);
 //						logger.error("cpuTotalTime个数:"+cpuTestResultWeek.size());
-						entity.setCpu(ranking);
-		    		}
+						ranking = (float)Math.round(ranking);
+						cpuEntity.setCpu(ranking);
+//		    		}
 		    		break;
 		    	case "SumRankingMemEntity"://获取mem数据
 		    		showEnd = "SumRankingMemEntity";
-		    		System.out.println("开始任务SumRankingMemEntity:"+System.currentTimeMillis());
-		    		for(int i = 0; i < list.size(); i++){
-		    			SumRankingMemEntity entity = (SumRankingMemEntity)list.get(i);
+//		    		for(int i = 0; i < list.size(); i++){
+		    			SumRankingMemEntity memEntity = (SumRankingMemEntity)list.get(i);
 		    		ranking = 0.0f;
-					List<BeanMem> memTestResultWeekList = (List<BeanMem>)ClientOperFactory.findByIdTime(BeanMem.class, entity.getId()+"", timeStart, timeEnd);
+					List<BeanMem> memTestResultWeekList = (List<BeanMem>)ClientOperFactory.findByIdTime(BeanMem.class, memEntity.getId()+"", timeStart, timeEnd);
+					memEntity.setTestTime(timeStart);
 					if(memTestResultWeekList.size() > 0){
 						for (BeanMem beanMem : memTestResultWeekList){
 							ranking += beanMem.getTransferSpeed();
@@ -250,16 +287,17 @@ public class SumGetchatAction extends ActionSupport{
 					}
 //					logger.error("memgetTransferSpeed:"+ranking);
 //					logger.error("memgetTransferSpeed个数:"+memTestResultWeekList.size());
-					entity.setMem(ranking);
-		    		}
+					ranking = (float)Math.round(ranking);
+					memEntity.setMem(ranking);
+//		    		}
 		    		break;
 		    	case "SumRankingTransEntity"://获取mysql数据
 		    		showEnd = "SumRankingTransEntity";
-		    		System.out.println("开始任务SumRankingTransEntity:"+System.currentTimeMillis());
-		    		for(int i = 0; i < list.size(); i++){
-		    			SumRankingTransEntity entity = (SumRankingTransEntity)list.get(i);
+//		    		for(int i = 0; i < list.size(); i++){
+		    		SumRankingTransEntity transEntity = (SumRankingTransEntity)list.get(i);
 		    		ranking = 0.0f;
-					List<BeanTpcc> oltpTestResultWeek = (List<BeanTpcc>)ClientOperFactory.findByIdTime(BeanTpcc.class, entity.getId()+"", timeStart, timeEnd);
+					List<BeanTpcc> oltpTestResultWeek = (List<BeanTpcc>)ClientOperFactory.findByIdTime(BeanTpcc.class, transEntity.getId()+"", timeStart, timeEnd);
+					transEntity.setTestTime(timeStart);
 					if(oltpTestResultWeek.size() > 0){
 						for (BeanTpcc beanTpcc : oltpTestResultWeek){
 							ranking += beanTpcc.getTpmc();
@@ -269,14 +307,14 @@ public class SumGetchatAction extends ActionSupport{
 //					logger.error("OltpTestTransactionFrq:"+ranking);
 //					logger.error("OltpTestTransactionFrq个数:"+oltpTestResultWeek.size());
 //					logger.error("id:"+cloudPlatformRanking.getId()+"getRndrd："+cloudPlatformRanking.getRndrd()+"getRndwr："+cloudPlatformRanking.getRndwr()+"getTransaction"+cloudPlatformRanking.getTransaction()+"getCpu"+cloudPlatformRanking.getCpu()+"getMem"+cloudPlatformRanking.getMem());
-					entity.setTransaction(ranking);
-		    		}
+					ranking = (float)Math.round(ranking);
+					transEntity.setTransaction(ranking);
+//		    		}
 		    		break;
 		    	}
 	    		break;
 	    	case 2://fileIO
 	    		showEnd = "fileIO";
-	    		System.out.println("开始任务fileIO:"+System.currentTimeMillis());
 	    		ArrayList<? extends SumRankingAbstractEntity> rdlist;//由于这list是一起加进去的，所以认为公司的顺序是一样的
 	    		ArrayList<? extends SumRankingAbstractEntity> wrlist;
 	    		if(lists.get(0).get(0).getSubClassName().equals("SumRankingRndrdEntity")){
@@ -286,11 +324,11 @@ public class SumGetchatAction extends ActionSupport{
 	    			rdlist = lists.get(1);
 	    			wrlist = lists.get(0);
 	    		}
-	    		for(int i = 0; i < rdlist.size(); i++){
+//	    		for(int i = 0; i < rdlist.size(); i++){
 	    		SumRankingRndrdEntity rdEntity = (SumRankingRndrdEntity)rdlist.get(i);
 	    		SumRankingRndwrEntity wrEntity = (SumRankingRndwrEntity)wrlist.get(i);
-				Integer rankingRndwr = 0;
-				Integer rankingRndrd = 0;
+	    		Float rankingRndwr = 0.0f;
+	    		Float rankingRndrd = 0.0f;
 				List<BeanIozone> fileTestResultWeekList = (List<BeanIozone>)ClientOperFactory.findByIdTime(BeanIozone.class, rdEntity.getId()+"", timeStart, timeEnd);
 				if(fileTestResultWeekList.size() > 0){
 					for (BeanIozone beanIozone : fileTestResultWeekList){
@@ -302,13 +340,14 @@ public class SumGetchatAction extends ActionSupport{
 				}
 //				logger.error("rankingRndrd:"+rankingRndrd);
 //				logger.error("rankingRndrd个数:"+fileTestResultWeekList.size());
+				rankingRndrd = (float)Math.round(rankingRndrd);
+				rankingRndwr = (float)Math.round(rankingRndwr);
 				rdEntity.setRndrd(rankingRndrd);
 				wrEntity.setRndwr(rankingRndwr);
-	    		}
+//	    		}
 	    		break;
 	    	case 5://Ping
 	    		showEnd = "Ping";
-	    		System.out.println("开始任务Ping:"+System.currentTimeMillis());
 	    		ArrayList<? extends SumRankingAbstractEntity> pingBaidulist = new ArrayList<SumRankingAbstractEntity>();//由于这list是一起加进去的，所以认为公司的顺序是一样的
 	    		ArrayList<? extends SumRankingAbstractEntity> pingSinalist = new ArrayList<SumRankingAbstractEntity>();
 	    		ArrayList<? extends SumRankingAbstractEntity> pingSouhulist = new ArrayList<SumRankingAbstractEntity>();
@@ -333,8 +372,7 @@ public class SumGetchatAction extends ActionSupport{
 		    			break;
 		    		}
 	    		}
-	    		for(int i = 0; i < pingBaidulist.size(); i++){
-	    			long pingEachStart = System.currentTimeMillis();
+//	    		for(int i = 0; i < pingBaidulist.size(); i++){
 	    			SumRankingPingBaiduEntity entityBaidu = (SumRankingPingBaiduEntity)pingBaidulist.get(i);
 	    			SumRankingPing163Entity entity163 = (SumRankingPing163Entity)ping163list.get(i);
 	    			SumRankingPingQQEntity entityQQ = (SumRankingPingQQEntity)pingQQlist.get(i);
@@ -345,9 +383,7 @@ public class SumGetchatAction extends ActionSupport{
 	    			float rankingQQ = 0.0f;
 	    			float rankingSINA = 0.0f;
 	    			float rankingSOUHU = 0.0f;
-	    			long pingEachStartin = System.currentTimeMillis();
 				List<BeanPing> pingTestResultWeek = (List<BeanPing>)ClientOperFactory.findByIdTime(BeanPing.class, entityBaidu.getId()+"", timeStart, timeEnd);
-				System.out.println("每一个Ping从dbproxy获取花费时间："+(System.currentTimeMillis() - pingEachStartin)/1000);
 				if(pingTestResultWeek.size() > 0){
 					for (BeanPing beanPing : pingTestResultWeek){
 						switch(beanPing.getDestIp()){
@@ -377,13 +413,17 @@ public class SumGetchatAction extends ActionSupport{
 				}
 //				logger.error("pingTestResultWeek:"+ranking);
 //				logger.error("pingTestResultWeek个数:"+pingTestResultWeek.size());
+				rankingBAiDU = (float)Math.round(rankingBAiDU);
+				rankingN163 = (float)Math.round(rankingN163);
+				rankingQQ = (float)Math.round(rankingQQ);
+				rankingSINA = (float)Math.round(rankingSINA);
+				rankingSOUHU = (float)Math.round(rankingSOUHU);
 				entityBaidu.setPingBaidu(rankingBAiDU);
 				entity163.setPing163(rankingN163);
 				entityQQ.setPingQQ(rankingQQ);
 				entitySina.setPingSina(rankingSINA);
 				entitySouhu.setPingSouhu(rankingSOUHU);
-				System.out.println("每一个Ping花费时间："+(System.currentTimeMillis() - pingEachStart)/1000);
-	    		}
+//	    		}
 	    		break;
 	    	}
 	    	
@@ -396,7 +436,7 @@ public class SumGetchatAction extends ActionSupport{
 //			System.out.println("cloudPlatformRanking.getRndwr()"+cloudPlatformRanking.getRndwr());
 //			System.out.println("cloudPlatformRanking.getTransaction()"+cloudPlatformRanking.getTransaction());
 //			System.out.println("cloudPlatformRanking.getPing()"+cloudPlatformRanking.getPing());
-	    	System.out.println("任务结束"+showEnd+":"+(System.currentTimeMillis()-start)/1000);
+	    	System.out.println("任务结束总耗时"+showEnd+":"+(System.currentTimeMillis()-start)/1000);
 	    	return lists;
 	    }
 	}

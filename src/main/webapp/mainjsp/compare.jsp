@@ -27,13 +27,19 @@
    				   	<div class="form-horizontal">
 						<div class="form-group">
 							<label class="col-md-1 control-label front-label" style="padding-top: 0px">指标</label>
-							<div class="col-md-5">
+							<div class="col-md-5" style="width:90%">
 								<div class="front-checkboxes front-checkboxes-bottom">
 									<label><input type="checkbox" value="0" name="dataselect" checked="checked">CPU</label>
 									<label><input type="checkbox" value="1" name="dataselect">内存</label>
 									<label><input type="checkbox" value="2" name="dataselect">硬盘I/O</label>
 									<label><input type="checkbox" value="3" name="dataselect">MySQL</label>
-									<label><input type="checkbox" value="4" name="dataselect">PING</label>
+								</div>
+								<div class="front-checkboxes front-checkboxes-bottom" >
+									<label><input type="checkbox" value="4" name="dataselectping">ping www.baidu.com</label>
+									<label><input type="checkbox" value="5" name="dataselectping">ping www.163.com</label>
+									<label><input type="checkbox" value="6" name="dataselectping">ping www.sina.com.cn</label>
+									<label><input type="checkbox" value="7" name="dataselectping">ping www.qq.com</label>
+									<label><input type="checkbox" value="8" name="dataselectping">ping www.sohu.com</label>
 								</div>
 							</div>	
 						</div>
@@ -101,7 +107,8 @@ $(function(){
 	compareConfirm('','','','');
 });
 
-$(function () {
+/**
+ $(function () {
     $('#testhighcharts').highcharts({
         chart: {
             zoomType: 'xy'
@@ -177,6 +184,8 @@ $(function () {
         }]
     });
 });
+ */
+
 
 function resetting(){
 	var $dataselect = $("input[name=dataselect]:checked");

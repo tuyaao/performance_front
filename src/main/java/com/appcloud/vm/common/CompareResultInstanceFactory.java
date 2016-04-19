@@ -64,7 +64,7 @@ public class CompareResultInstanceFactory {
 			BeanCpu obj = cpuTestVm.get(k);
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime((Date)obj.getCreatedTime());
-			cpuTestMap.put(calendar, (Float) obj.getTotalTime());
+			cpuTestMap.put(calendar, (float)(Math.round(obj.getTotalTime()*100))/100);
 //			logger.error("Cpu初始查询时间："+stringUtil.cal2String(calendar)+"; 初始查询值："+cpuTestVm.get(k).getTotalTime()+"");
 		}
 		compareResultInstance.setCurve(insertTestResultGeneral(cpuTestMap,
@@ -98,7 +98,7 @@ public class CompareResultInstanceFactory {
 			BeanMem obj = memTestVm.get(k);
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime((Date)obj.getCreatedTime());
-			memTestMap.put(calendar, obj.getTransferSpeed());
+			memTestMap.put(calendar, (float)(Math.round(obj.getTransferSpeed()*100))/100);
 //			logger.error("Mem初始查询时间："+stringUtil.cal2String(calendar)+"; 初始查询值："+memTestVm.get(k).getTransferSpeed()+"");
 		}
 		compareResultInstance.setCurve(insertTestResultGeneral(memTestMap,
@@ -149,13 +149,13 @@ public class CompareResultInstanceFactory {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(obj.getCreatedTime());
 					ioSeqrdTestMap
-							.put(calendar, Float.parseFloat(obj.getRead()+""));
+							.put(calendar, (float)(Math.round(Float.parseFloat(obj.getRead()+"")*100))/100);
 					ioSeqwrTestMap
-							.put(calendar, Float.parseFloat(obj.getWrite()+""));
+							.put(calendar, (float)(Math.round(Float.parseFloat(obj.getWrite()+"")*100))/100);
 					ioRndrdTestMap
-							.put(calendar, Float.parseFloat(obj.getRandomRead()+""));
+							.put(calendar, (float)(Math.round(Float.parseFloat(obj.getRandomRead()+"")*100))/100);
 					ioRndwrTestMap
-							.put(calendar, Float.parseFloat(obj.getRandomWrite()+""));
+							.put(calendar, (float)(Math.round(Float.parseFloat(obj.getRandomWrite()+"")*100))/100);
 //					logger.error("IORead初始查询时间："+stringUtil.cal2String(calendar)+"; 初始查询值："+ioTestVm.get(k).getRead()+"");
 					
 			}
@@ -213,10 +213,10 @@ public class CompareResultInstanceFactory {
 			BeanTpcc obj = oltpTestVm.get(k);
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime((Date)obj.getCreatedTime());
-			oltptransTestMap.put(calendar, (Float) obj.getTpmc());
-			oltpdeadTestMap.put(calendar, Float.parseFloat("0"));
-			oltprdwrTestMap.put(calendar, Float.parseFloat("0"));
-			oltpotherTestMap.put(calendar, Float.parseFloat("0"));
+			oltptransTestMap.put(calendar, (float)(Math.round(Float.parseFloat(obj.getTpmc()+"")*100))/100);
+			oltpdeadTestMap.put(calendar, (float)(Math.round(Float.parseFloat("0")*100))/100);
+			oltprdwrTestMap.put(calendar, (float)(Math.round(Float.parseFloat("0")*100))/100);
+			oltpotherTestMap.put(calendar, (float)(Math.round(Float.parseFloat("0")*100))/100);
 //			logger.error("Oltp初始查询时间："+stringUtil.cal2String(calendar)+"; 初始查询值："+oltpTestVm.get(k).getTpmc()+"");
 		}
 		
@@ -291,19 +291,19 @@ public class CompareResultInstanceFactory {
 			calendar.setTime((Date)obj.getCreatedTime());
 			switch(obj.getDestIp()){
 			case Constants.BAiDU:
-				pingBaiduTestMap.put(calendar, obj.getAvg());
+				pingBaiduTestMap.put(calendar, (float)(Math.round(obj.getAvg()*100))/100);
 				break;
 			case Constants.N163:
-				ping163TestMap.put(calendar, obj.getAvg());
+				ping163TestMap.put(calendar, (float)(Math.round(obj.getAvg()*100))/100);
 				break;
 			case Constants.SINA:
-				pingQQTestMap.put(calendar, obj.getAvg());
+				pingQQTestMap.put(calendar, (float)(Math.round(obj.getAvg()*100))/100);
 				break;
 			case Constants.QQ:
-				pingSinaTestMap.put(calendar, obj.getAvg());
+				pingSinaTestMap.put(calendar, (float)(Math.round(obj.getAvg()*100))/100);
 				break;
 			case Constants.SOUHU:
-				pingSouhuTestMap.put(calendar, obj.getAvg());
+				pingSouhuTestMap.put(calendar, (float)(Math.round(obj.getAvg()*100))/100);
 				break;
 			}
 //			logger.error("Ping初始查询时间："+stringUtil.cal2String(calendar)+"; 初始查询值："+pingTestVm.get(k).getAvg()+"");

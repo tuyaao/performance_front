@@ -95,7 +95,21 @@
     </error-page>
     
     <listener>
-    <listener-class>com.appcloud.vm.common.InitializeListener</listener-class>
+        <listener-class>com.appcloud.vm.common.InitializeListener</listener-class>
     </listener>
+    <listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<!-- Servlet Context Listener 
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath*:persistence-datasource-context.xml
+			classpath*:persistence-hibernate-session.xml
+			classpath*:bean-context.xml
+		</param-value>
+	</context-param>
+	-->
     
 </web-app>

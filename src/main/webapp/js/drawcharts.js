@@ -4,7 +4,8 @@
     
 var myname = [];
 var dataForExportExcel;
-var dataselect = document.getElementsByName("dataselect");//需要查询的指标
+var dataselect = document.getElementsByName("dataselect");//需要查询的指标除了ping其他
+var dataselectping = document.getElementsByName("dataselectping");//需要查询的指标ping
 
 var cpuCurveList = null;
 var memoryCurveList = null;
@@ -23,6 +24,13 @@ var rankPingQQ = null;
 var rankPingSouhu = null;
 
 function compareConfirm(id,name,cpu,ram){
+	//用于把ping的条目重新设置为有效的
+//	if(!dataselectping[0].checked){ select.options[0].disabled = false;}
+//	if(!dataselectping[1].checked){ select.options[1].disabled = false;}
+//	if(!dataselectping[2].checked){ select.options[2].disabled = false;}
+//	if(!dataselectping[3].checked){ select.options[3].disabled = false;}
+//	if(!dataselectping[4].checked){ select.options[4].disabled = false;}
+	
 	$("#cpu").addClass("hidden");
 	$("#memory").addClass("hidden");
 	$("#ioseqrd").addClass("hidden");
@@ -62,7 +70,27 @@ function compareConfirm(id,name,cpu,ram){
     			dataselectarray += dataselect[i].value+",";			
     		}
     	}
-
+    	for(var i=0; i<dataselectping.length; i++){
+    		if(dataselectping[i].checked){
+    			dataselectarray += "4,";
+    			break;
+    		}
+    	}
+    	
+//    	var baiduoption = select.options[0];
+//    	var 163option = select.options[1];
+//    	var sinaoption = select.options[2];
+//    	var qqoption = select.options[3];
+//    	var sohuoption = select.options[4];
+    	
+//      根据结果把返回条目设置为无效的
+//    	var select=document.getElementById("pingchartselect");
+//    	if(!dataselectping[0].checked){ $("#optionbaidu").disabled = true;}
+//    	if(!dataselectping[1].checked){ select.options[1].disabled = false;}
+//    	if(!dataselectping[2].checked){ select.options[2].disabled = false;}
+//    	if(!dataselectping[3].checked){ select.options[3].disabled = false;}
+//    	if(!dataselectping[4].checked){ select.options[4].disabled = false;}
+        
     	$.post("compare/companyaction",{ instanceselecttxt: idlist, selectendtime: selectendtime, selectstarttime: selectstarttime,hostselecttxt: dataselectarray},function(data){
     		dataForExportExcel = data.compareResultEntity;
     		for( var j = 0 ; j < data.compareResultEntity.resultEntitylist.length ; j++){
@@ -157,7 +185,7 @@ function compareConfirm(id,name,cpu,ram){
 //    			alert("data.compareResultEntity.pingCurveList != null");
 //    		}
     		
-    		if(dataselect[4].checked && rankPing != null){
+    		if((dataselectping[0].checked || dataselectping[1].checked || dataselectping[2].checked || dataselectping[3].checked ||  dataselectping[4].checked) && rankPing != null){
     			$("#ping").removeClass("hidden");
     			chartdata("pinghighcharts", "PING", rankPing); 			
     		}
@@ -283,8 +311,12 @@ function configChartOptions(holderid, title, xdata, datas, xstep) {
             }
         },
         tooltip: {
+        	 style: {  //提示框内容的样式
+                 width:'10000px',
+             },
             formatter: function() {
-                    return this.series.name +' 数据:<b>'+this.point.y+'</b><br/>时间:<b>'+xdata[this.point.x]+'</b>';
+                    //return this.series.name + '<br/>' + '数据:<b>'+this.point.y+'</b><br/>时间:<b>'+xdata[this.point.x]+'<span>    </span>'+'</b>';
+            	    return '<div style="width: 10000px;">' + this.series.name + '</div>' + '<br/>' + '<div>数据:' + this.point.y + '</div>' + '<br/>' +'<div>时间:' + xdata[this.point.x] +'</div>';
             }
         },
         scrollbar: {

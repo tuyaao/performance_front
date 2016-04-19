@@ -20,10 +20,16 @@ import com.appcloud.vm.action.entity.CloudPlatformEntity;
 import com.appcloud.vm.action.entity.SumRankingAbstractEntity;
 import com.appcloud.vm.action.entity.SumRankingOperaFactory;
 import com.appcloud.vm.action.entity.VM48InforEntity;
+import com.appcloud.vm.utils.GetSumResult;
 
 //由于在开始进行了数据的获取，所以要监听数据库的改变。包括相应proxy的findall()和得到4核8G的主机所有相关数据
 public class InitializeListener implements ServletContextListener {
  
+	//首页返回的数据
+	public static SumRankingOperaFactory listsstatic;
+	public static String testUpToTimestatic = "testUpToTime";//事务数测试表的截至时间的那一周的开始
+	public static String testUpToTimeEndstatic = "testUpToTimeEnd";//事务数测试表的截至时间的那一周的现在
+	
     private static Boolean twice = false;	
 	private static ArrayList<CloudPlatform> cloudPlatformList;
 	private static ArrayList<VMInstance> VmInstanceList;
@@ -80,6 +86,14 @@ public class InitializeListener implements ServletContextListener {
 		try {
 			cloudPlatformList = (ArrayList<CloudPlatform>) MySQLOperFactory
 					.getAll(CloudPlatform.class);
+			//暂时去掉星云，云海两家公司的数据
+			Iterator<CloudPlatform> itercloudPlat = cloudPlatformList.iterator();
+			while(itercloudPlat.hasNext()){  
+				CloudPlatform s = itercloudPlat.next();  
+	    	    if(s.getId().equals(11)){  
+	    	    	itercloudPlat.remove();  
+	    	    }  
+	    	}  
 			System.out.println("总共有的公司个数：" + cloudPlatformList.size());
 
 			// 由于数据库的数据遗留，这里只要6家公司的主机
@@ -124,6 +138,24 @@ public class InitializeListener implements ServletContextListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//第一次获取首页数据
+//		System.out.println("开始获取首页数据");
+//		getSumResult();
+//		System.out.println("获取首页数据完毕");
+		
+		//启动守护线程每小时更新一次数据
+		System.out.println("开始设置守护线程");
+		GetSumThread getSumThread = new GetSumThread();
+		getSumThread.setDaemon(true); //设置守护线程  
+		getSumThread.start(); //开始执行守护线程  
+		System.out.println("守护线程设置完毕");
+		
+		System.out.println("开始统计线程");
+		SaveDataToMysqlThread saveDataToMysqlThread = new SaveDataToMysqlThread();
+		saveDataToMysqlThread.setDaemon(true); //设置守护线程  
+		saveDataToMysqlThread.start(); //开始执行守护线程  
+		System.out.println("守护线统计线程");
+		
 	}
 
 	private void iniVm48List() {
@@ -152,7 +184,7 @@ public class InitializeListener implements ServletContextListener {
 				VM48InforList.add(vM48InforEntity);
 			}
 		}
-//		 testGetIniVm48();
+		 testGetIniVm48();
 	}
 
 	/***
@@ -198,8 +230,32 @@ public class InitializeListener implements ServletContextListener {
 //							vM48InforEntity.getPlatformName());
 //				}
 		}
-		System.out.println("QQ的list的个数："+cloudPlatformRankingList.getCloudPlatformPingQQRankingList().size());
-		System.out.println("一共多少个："+cloudPlatformRankingList.getCloudPlatformPingBaiduRankingList().size());
+		System.out.println("一共多少个4核8G的："+cloudPlatformRankingList.getCloudPlatformPingBaiduRankingList().size());
+	}
+	
+	private void getSumResult(){
+//		SumRankingOperaFactory lists = null;
+//		String testUpToTime = "testUpToTime";
+//		String testUpToTimeEnd = "testUpToTimeEnd";
+//		GetSumResult it = new GetSumResult();
+//		it.execute(lists, testUpToTime, testUpToTimeEnd);
+//		synchro(lists, testUpToTime, testUpToTimeEnd);
+		
+		
+//		GetSumResult it = new GetSumResult();
+//		it.execute(listsstatic, testUpToTimestatic, testUpToTimeEndstatic);
+//		System.out.println(testUpToTimestatic);	
+//		System.out.println(testUpToTimeEndstatic);
+//		System.out.println(listsstatic.getCloudPlatformCpuRankingList().get(0).getCpu());	
+	}
+	
+	public static synchronized void synchro(SumRankingOperaFactory lists, String testUpToTime, String testUpToTimeEnd){
+		listsstatic = lists;
+		testUpToTimestatic =testUpToTime;
+		testUpToTimeEndstatic = testUpToTimeEnd;
+//		lists = null;
+//		testUpToTime = null;
+//		testUpToTimeEnd = null;
 	}
 
 	private void testGetIniVm48() {
