@@ -2,7 +2,9 @@ package com.appcloud.vm.common;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -20,7 +22,7 @@ import com.appcloud.vm.action.entity.CloudPlatformEntity;
 import com.appcloud.vm.action.entity.SumRankingAbstractEntity;
 import com.appcloud.vm.action.entity.SumRankingOperaFactory;
 import com.appcloud.vm.action.entity.VM48InforEntity;
-import com.appcloud.vm.utils.GetSumResult;
+import com.appcloud.vm.action.entity.WeekSumForMysqlSave;
 
 //由于在开始进行了数据的获取，所以要监听数据库的改变。包括相应proxy的findall()和得到4核8G的主机所有相关数据
 public class InitializeListener implements ServletContextListener {
@@ -40,6 +42,7 @@ public class InitializeListener implements ServletContextListener {
 	//private static ArrayList<ArrayList<? extends SumRankingAbstractEntity>> cloudPlatformRankingList = new ArrayList<ArrayList<? extends SumRankingAbstractEntity>>();
 	//本来是这么写的，但是没法进行泛型转换
 	private static SumRankingOperaFactory cloudPlatformRankingList = new SumRankingOperaFactory();
+	private static HashMap<Integer,WeekSumForMysqlSave> saveWeekSumForMysql = new HashMap<Integer,WeekSumForMysqlSave>();
 	private static BdLogDao dbLogDao = new BdLogDao();// 这里只有一个线程使用，多线程访问不安全
 
 	public InitializeListener() {
@@ -77,7 +80,7 @@ public class InitializeListener implements ServletContextListener {
 		new ThreadPool();
 		System.out.println("初始化ThreadPool完毕");
 		iniAll();
-		System.out.println("初始化各类数据完毕");
+		System.out.println("初始化各类基本信息完毕");
 		// ThreadPool.execute(new CheckTask());
 	}
 
@@ -86,7 +89,7 @@ public class InitializeListener implements ServletContextListener {
 		try {
 			cloudPlatformList = (ArrayList<CloudPlatform>) MySQLOperFactory
 					.getAll(CloudPlatform.class);
-			//暂时去掉星云，云海两家公司的数据
+			//暂时去掉星云的数据
 			Iterator<CloudPlatform> itercloudPlat = cloudPlatformList.iterator();
 			while(itercloudPlat.hasNext()){  
 				CloudPlatform s = itercloudPlat.next();  
@@ -96,7 +99,7 @@ public class InitializeListener implements ServletContextListener {
 	    	}  
 			System.out.println("总共有的公司个数：" + cloudPlatformList.size());
 
-			// 由于数据库的数据遗留，这里只要6家公司的主机
+			// 由于数据库的数据遗留，这里只要5家公司的主机
 			HashSet<Integer> temp = new HashSet<Integer>();
 			for(CloudPlatform it : cloudPlatformList){
 				temp.add(it.getId());
@@ -112,11 +115,12 @@ public class InitializeListener implements ServletContextListener {
 			}
 			System.out.println("总共有的虚拟机个数：" + VmInstanceList.size());
 
-			// 由于数据库的数据遗留，这里只要6家公司的主机
+			// 由于数据库的数据遗留，这里只要5家公司的主机
 			temp.clear();
 			for(VMInstance it : VmInstanceList){
 				temp.add(it.getId());
 			}
+			
 			vmHardwareList = (ArrayList<VMhardware>) MySQLOperFactory
 					.getAll(VMhardware.class);
 			Iterator<VMhardware> VmHardwareIter = vmHardwareList.iterator();
@@ -135,6 +139,7 @@ public class InitializeListener implements ServletContextListener {
 			iniVm48List();
 			iniCloudPlatformEntityList(cloudPlatformList);// 注意初始化的依赖顺序
 			iniCloudPlatformRankingList(VM48InforList);
+			iniForSumWeekMysql(saveWeekSumForMysql);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -155,7 +160,6 @@ public class InitializeListener implements ServletContextListener {
 		saveDataToMysqlThread.setDaemon(true); //设置守护线程  
 		saveDataToMysqlThread.start(); //开始执行守护线程  
 		System.out.println("守护线统计线程");
-		
 	}
 
 	private void iniVm48List() {
@@ -222,15 +226,45 @@ public class InitializeListener implements ServletContextListener {
 			           val.get(i).setId(VM48InforList.get(i).getId());
 			           val.get(i).setCloudPlatformName(VM48InforList.get(i).getPlatformName());
 			       }
-//				for (int j = 0; j <= cloudPlatformRankingList.size(); j++) {
-//					ArrayList<SumRankingAbstractEntity> it = (ArrayList<SumRankingAbstractEntity>) Array
-//							.get(cloudPlatformRankingList, i);
-//					it.get(i).setId(vM48InforEntity.getId());
-//					it.get(i).setCloudPlatformName(
-//							vM48InforEntity.getPlatformName());
-//				}
 		}
 		System.out.println("一共多少个4核8G的："+cloudPlatformRankingList.getCloudPlatformPingBaiduRankingList().size());
+	}
+	
+	/**
+	 * 
+	 * @param 为了每周统计数据的存储，放在saveWeekSumForMysql里面的公司和主机三个表信息的集合
+	 * 通过之前查的三个表的数据，进行存放
+	 */
+	private void iniForSumWeekMysql(HashMap<Integer,WeekSumForMysqlSave> saveWeekSumForMysq){
+		for(VM48InforEntity vM48InforEntity : VM48InforList){
+			for( VMInstance vMInstance : VmInstanceList ){
+				if(!vM48InforEntity.getId().equals(vMInstance.getId())) continue;
+				WeekSumForMysqlSave bean = new WeekSumForMysqlSave();
+				bean.setUuid(vMInstance.getId());
+				bean.setIp(vMInstance.getIp());
+				bean.setMac(vMInstance.getMac());
+				bean.setCompanyId(vMInstance.getCloudPlatformId());
+				bean.setCreateTime(vMInstance.getCreateTime());
+				bean.setUpdateTime(vMInstance.getUpdateTime());
+				bean.setOs(vMInstance.getOs());
+				for(CloudPlatform cloudPlatform : cloudPlatformList){
+					if(cloudPlatform.getId().equals(vMInstance.getCloudPlatformId())){
+						System.out.println(cloudPlatform.getName());
+						bean.setCompanyName(cloudPlatform.getName());
+					}
+				}
+				for(VMhardware vMhardware : vmHardwareList){
+					if(vMhardware.getUuid().equals(vMInstance.getId()+"")){
+						bean.setCpu(vMhardware.getCpu());
+						bean.setMem(vMhardware.getMemory());
+						bean.setDisk(vMhardware.getDisk());
+						bean.setBandwidth(0);//带宽都是0,先设置为0
+					}
+				}
+				saveWeekSumForMysq.put(vMInstance.getId(), bean);
+				System.out.println(bean.toString());
+			}
+		}
 	}
 	
 	private void getSumResult(){
@@ -345,5 +379,15 @@ public class InitializeListener implements ServletContextListener {
 			SumRankingOperaFactory cloudPlatformRankingList) {
 		InitializeListener.cloudPlatformRankingList = cloudPlatformRankingList;
 	}
+
+	public static HashMap<Integer, WeekSumForMysqlSave> getSaveWeekSumForMysql() {
+		return saveWeekSumForMysql;
+	}
+
+	public static void setSaveWeekSumForMysql(
+			HashMap<Integer, WeekSumForMysqlSave> saveWeekSumForMysql) {
+		InitializeListener.saveWeekSumForMysql = saveWeekSumForMysql;
+	}
+	
 	
 }

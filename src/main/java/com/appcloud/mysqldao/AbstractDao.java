@@ -1,6 +1,7 @@
 package com.appcloud.mysqldao;
 
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -104,22 +105,19 @@ public abstract class AbstractDao<T> {
 		List<T> list = null;
 		Session session = HibernateSessionFactory.getInstance().getSession();
 		Transaction transaction = session.beginTransaction(); // 创建事务的对象ts
-		System.out.println("getClassName():"+getClassName());
+//		System.out.println("getClassName():"+getClassName());
 		String[] a = getClassName().split("\\.");
 		int size = a.length;
-		System.out.println("a[size - 1]"+a[size - 1]);
+//		System.out.println("a[size - 1]："+a[size - 1]);
 		String sql = "from " + a[size - 1]
 				+ " model where model.uuid"
-				+ "= :propertyValue1 and model.time"
+				+ "= :propertyValue1 and model.sumTime"
 				+ "= :propertyValue2";
-		System.out.println("sql:"+sql);
+//		System.out.println("sql:"+sql);
 		Query query = session.createQuery(sql);
-		query.setParameter("propertyName1", value1);
-		query.setParameter("propertyName2", value2);
+		query.setParameter("propertyValue1", value1);
+		query.setParameter("propertyValue2", value2);
 		list = (List<T>) query.list();
-		
-        
-        
 		try {
 			session.getTransaction().commit();
 		} catch (HibernateException he) {

@@ -1,30 +1,14 @@
-/**
- * @author TuYaao
- * @param  虚拟机实例
- *
- */
-
-package com.appcloud.vm.action.dbentity;
-
-import static javax.persistence.GenerationType.IDENTITY;
+package com.appcloud.vm.action.entity;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "oltp_test_result_newweek", catalog = "appcloud_performance")
-public class SumWeekTpcc implements java.io.Serializable {
-
-	/** field */
-	private static final long serialVersionUID = 1L;
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	private int id;
+public class WeekSumForMysqlSave {
+	
+//对应java中的java.sql.Timestamp类型（注意命名空间）。
+//保存到数据库这样做：
+//Timestamp.valueOf("时间");
+//注意时间的格式为：yyyy-MM-dd hh:mm:ss
+//从数据库取值用Timestamp保存即可。
 	private int uuid = 0;
 	private int cpu = 0;
 	private int mem = 0;
@@ -38,34 +22,12 @@ public class SumWeekTpcc implements java.io.Serializable {
 	private int companyId = 0;
 	private String companyName = "未初始化";
 	
-	private Timestamp sumTime;
-	private float tpmc;
-	private Integer count;
-
-	/** default constructor */
-	public SumWeekTpcc() {
+	private static final long serialVersionUID = 1L;
+	
+	public WeekSumForMysqlSave(){
+		
 	}
 
-	/** minimal constructor */
-	public SumWeekTpcc(int id) {
-		this.id = id;
-	}
-
-	/** full constructor */
-    //TODO
-
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	@Column(name = "uuid")
 	public int getUuid() {
 		return uuid;
 	}
@@ -74,7 +36,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.uuid = uuid;
 	}
 
-	@Column(name = "cpu")
 	public int getCpu() {
 		return cpu;
 	}
@@ -83,7 +44,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.cpu = cpu;
 	}
 
-	@Column(name = "mem")
 	public int getMem() {
 		return mem;
 	}
@@ -92,7 +52,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.mem = mem;
 	}
 
-	@Column(name = "disk")
 	public int getDisk() {
 		return disk;
 	}
@@ -101,7 +60,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.disk = disk;
 	}
 
-	@Column(name = "bandwidth")
 	public int getBandwidth() {
 		return bandwidth;
 	}
@@ -110,7 +68,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.bandwidth = bandwidth;
 	}
 
-	@Column(name = "ip")
 	public String getIp() {
 		return ip;
 	}
@@ -119,7 +76,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.ip = ip;
 	}
 
-	@Column(name = "mac")
 	public String getMac() {
 		return mac;
 	}
@@ -128,7 +84,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.mac = mac;
 	}
 
-	@Column(name = "create_time")
 	public Timestamp getCreateTime() {
 		return createTime;
 	}
@@ -137,7 +92,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
-	@Column(name = "update_time")
 	public Timestamp getUpdateTime() {
 		return updateTime;
 	}
@@ -146,12 +100,6 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.updateTime = updateTime;
 	}
 
-	@Column(name = "company_id")
-	public int getCompanyId() {
-		return companyId;
-	}
-
-	@Column(name = "os")
 	public String getOs() {
 		return os;
 	}
@@ -160,11 +108,14 @@ public class SumWeekTpcc implements java.io.Serializable {
 		this.os = os;
 	}
 
+	public int getCompanyId() {
+		return companyId;
+	}
+
 	public void setCompanyId(int companyId) {
 		this.companyId = companyId;
 	}
 
-	@Column(name = "company_name")
 	public String getCompanyName() {
 		return companyName;
 	}
@@ -172,32 +123,20 @@ public class SumWeekTpcc implements java.io.Serializable {
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
-
-	@Column(name = "sum_time")
-	public Timestamp getSumTime() {
-		return sumTime;
+	
+	public String toString(){
+		return  "uuid:" + uuid + " " +
+				"cpu:" + cpu + " " +
+				"mem:" + mem + " " +
+				"disk:" + mem + " " +
+				"bandwidth:" + bandwidth + " " +
+				"ip:" + ip + " " +
+				"mac:" + mac + " " +
+				"createTime:" + createTime + " " +
+				"updateTime:" + updateTime + " " +
+				"os:" + os + " " +
+				"companyId:" + companyId + " " +
+				"companyName:" + companyName;
 	}
-
-	public void setSumTime(Timestamp sumTime) {
-		this.sumTime = sumTime;
-	}
-
-	@Column(name = "tpmc")
-	public float getTpmc() {
-		return tpmc;
-	}
-
-	public void setTpmc(float tpmc) {
-		this.tpmc = tpmc;
-	}
-
-	@Column(name = "count")
-	public Integer getCount() {
-		return count;
-	}
-
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-
+	
 }

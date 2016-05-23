@@ -8,6 +8,7 @@ package com.appcloud.vm.action.dbentity;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -30,10 +31,21 @@ public class SumWeekCpu implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
-	private Integer id;
-	private Integer uuid;
-	private String companyname;
-	private String time;
+	private int id;
+	private int uuid = 0;
+	private int cpu = 0;
+	private int mem = 0;
+	private int disk = 0;
+	private int bandwidth = 0;
+	private String ip = "未初始化";
+	private String mac = "未初始化";
+	private Timestamp createTime = Timestamp.valueOf("2000-01-01 00:00:00");
+	private Timestamp updateTime = Timestamp.valueOf("2000-01-01 00:00:00");
+	private String os = "未初始化";
+	private int companyId = 0;
+	private String companyName = "未初始化";
+	
+	private Timestamp sumTime;
 	private float totalTime;
 	private Integer count;
 
@@ -42,60 +54,142 @@ public class SumWeekCpu implements java.io.Serializable {
 	}
 
 	/** minimal constructor */
-	public SumWeekCpu(Integer id) {
+	public SumWeekCpu(int id) {
 		this.id = id;
 	}
 
 	/** full constructor */
-	public SumWeekCpu(Integer id, Integer uuid, String companyname,
-			String time, float totalTime, Integer count) {
-		this.id = id;
-		this.uuid = uuid;
-		this.companyname = companyname;
-		this.time = time;
-		this.totalTime = totalTime;
-		this.count = count;
-	}
+	//TODO
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id", unique = true, nullable = false)
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
 	@Column(name = "uuid")
-	public Integer getUuid() {
+	public int getUuid() {
 		return uuid;
 	}
 
-	public void setUuid(Integer uuid) {
+	public void setUuid(int uuid) {
 		this.uuid = uuid;
 	}
 
-	@Column(name = "companyname")
-	public String getCompanyname() {
-		return companyname;
+	@Column(name = "cpu")
+	public int getCpu() {
+		return cpu;
 	}
 
-	public void setCompanyname(String companyname) {
-		this.companyname = companyname;
+	public void setCpu(int cpu) {
+		this.cpu = cpu;
 	}
 
-	@Column(name = "time")
-	public String getTime() {
-		return time;
+	@Column(name = "mem")
+	public int getMem() {
+		return mem;
 	}
 
-	public void setTime(String time) {
-		this.time = time;
+	public void setMem(int mem) {
+		this.mem = mem;
 	}
 
-	@Column(name = "totalTime")
+	@Column(name = "disk")
+	public int getDisk() {
+		return disk;
+	}
+
+	public void setDisk(int disk) {
+		this.disk = disk;
+	}
+
+	@Column(name = "bandwidth")
+	public int getBandwidth() {
+		return bandwidth;
+	}
+
+	public void setBandwidth(int bandwidth) {
+		this.bandwidth = bandwidth;
+	}
+
+	@Column(name = "ip")
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	@Column(name = "mac")
+	public String getMac() {
+		return mac;
+	}
+
+	public void setMac(String mac) {
+		this.mac = mac;
+	}
+
+	@Column(name = "create_time")
+	public Timestamp getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Timestamp createTime) {
+		this.createTime = createTime;
+	}
+
+	@Column(name = "update_time")
+	public Timestamp getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Timestamp updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	@Column(name = "os")
+	public String getOs() {
+		return os;
+	}
+
+	public void setOs(String os) {
+		this.os = os;
+	}
+
+	@Column(name = "company_id")
+	public int getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(int companyId) {
+		this.companyId = companyId;
+	}
+
+	@Column(name = "company_name")
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	@Column(name = "sum_time")
+	public Timestamp getSumTime() {
+		return sumTime;
+	}
+
+	public void setSumTime(Timestamp sumTime) {
+		this.sumTime = sumTime;
+	}
+
+	@Column(name = "total_time")
 	public float getTotalTime() {
 		return totalTime;
 	}
@@ -124,9 +218,7 @@ public class SumWeekCpu implements java.io.Serializable {
 	    } 
 		
 	    SumWeekCpu sumWeekCpu = new SumWeekCpu();
-	    sumWeekCpu.setCompanyname("公司");
 	    sumWeekCpu.setCount(3);
-	    sumWeekCpu.setTime("rfef");
 	    sumWeekCpu.setTotalTime(34);
 	    sumWeekCpu.setUuid(23);
 	    sumWeekCpuDao.save(sumWeekCpu);

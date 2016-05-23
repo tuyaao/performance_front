@@ -18,11 +18,11 @@
 		<!--数据库方言信息 -->
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 		<!-- 在控制台打印生成的SQL语句 -->
-		<property name="hibernate.show_sql">true</property>
+		<property name="hibernate.show_sql">false</property>
 		<!-- 对控制台输出SQL语句进行格式化，为了方便阅读 -->
 		<property name="hibernate.format_sql">true</property>
 		<!-- 在控制台输出便于调试的控制信息 -->
-		<property name="use_sql_comments">true</property>
+		<property name="use_sql_comments">false</property>
 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<!-- 
 		可以自动根据类生成DDL 建表语言，完成自动建表

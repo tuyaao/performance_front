@@ -15,7 +15,7 @@ public class VMhardware implements java.io.Serializable {
 	private Integer cpu;
 	private Integer memory;
 	private Integer disk;
-	private Integer bandwidth;;
+	private Integer bandwidth;
 
 	/** default constructor */
 	public VMhardware() {
